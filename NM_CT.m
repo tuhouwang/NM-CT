@@ -26,7 +26,7 @@
 % modal acoustic field using the Chebyshev-Tau spectral method based on   |
 % the normal modes.                                                       |
 % -------------------------------------------------------------------------
-edit 'input.txt';
+% edit 'input.txt';
 clear;
 close all;
 clc;
@@ -293,14 +293,14 @@ end
 function [nmodes,kr,eigvectorw,eigvectorb] = NumofModes...
     (w,kr,eigvectorw,eigvectorb,cpmax)
 
-    cp = w / real(kr);
+    cp = w ./ real(kr);
     nmodes  = 0;
-    for i=1:length(kr)
+    for i = 1 : length(kr) - 1
         if(cp(i) <= cpmax)
             nmodes = i;
         end
     end
-
+    
     if(nmodes == 0)
         error('Incorrect maximum phase speed input!');
     end
@@ -388,8 +388,8 @@ end
 function ShowWavenumbers(kr,casename)
 
     disp('plot the modal wavenumbers!');
-    figure;title(casename);
-    plot(real(kr),imag(kr),'r*');
+    figure;
+    plot(real(kr),imag(kr),'r*');title(casename);
     xlabel('Real Wavenumber (1/m)');
     ylabel('Imaginary Wavenumber (1/m)');  
     set(gca,'FontSize',16,'FontName','Times New Roman');
