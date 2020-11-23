@@ -26,7 +26,7 @@
 % modal acoustic field using the Chebyshev-Tau spectral method based on   |
 % the normal modes.                                                       |
 % -------------------------------------------------------------------------
-% edit 'input.txt';
+edit 'input.txt';
 clear;
 close all;
 clc;
@@ -338,7 +338,8 @@ function a = Normalization(eigvectorw,eigvectorb,nmodes,...
         f1 = Rw * f1;        
         f2 = Rb * f2;
 
-        a(j)=sqrt(dot(P1,f1)*interface/2+dot(P2,f2)*(bottom-interface)/2);
+        a(j) = sqrt(P1' * f1 * interface / 2 + ...
+                    P2' * f2 * (bottom - interface) / 2);
     end
 
 end
