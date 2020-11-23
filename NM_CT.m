@@ -125,13 +125,14 @@ fclose(fid);
 
 end
 
-function [c1,c2,c3] = Interpolation(dep,c1,c2,c3,N,s,t)
+function [c,rho,alpha] = Interpolation(dep,c,rho,alpha,N,s,t)
 
-x  = cos( (0 : N) * pi / N )';
-z  = ( (t + s) / (t - s) - x ) * (t - s) / 2.0;
-c1  = interp1(dep,c1,z,'linear');
-c2  = interp1(dep,c2,z,'linear');
-c3  = interp1(dep,c3,z,'linear');
+x = cos( (0 : N) * pi / N )';
+z = ( (t + s) / (t - s) - x ) * (t - s) / 2.0;
+
+c     = interp1(dep,c,z,'linear');
+rho   = interp1(dep,rho,z,'linear');
+alpha = interp1(dep,alpha,z,'linear');
 
 end
 
@@ -303,8 +304,8 @@ if(nmodes == 0)
 end
 
 kr = kr(1 : nmodes);
-eigvectorw = eigvectorw(:,1:nmodes);
-eigvectorb = eigvectorb(:,1:nmodes);
+eigvectorw = eigvectorw(:, 1:nmodes);
+eigvectorb = eigvectorb(:, 1:nmodes);
 
 end
 
@@ -335,8 +336,8 @@ for j = 1 : nmodes
     f1 = Rw * f1;
     f2 = Rb * f2;
     
-    a(j) = sqrt(P1 * f1 * interface / 2 + ...
-        P2 * f2 * (bottom - interface) / 2);
+    a(j) = sqrt( P1 * f1 * interface / 2 + ...
+        P2 * f2 * (bottom - interface) / 2 );
 end
 
 end
@@ -367,8 +368,8 @@ end
 function [tl,tl_zr] = SynthesizeSoundField(r,z,kr,rhozs,psizs,psi,zr)
 
 bessel = besselh(0,1,kr * r);
-p      = psi * diag(psizs) * bessel * 1i * pi / rhozs;
-tl     = -20 * log10(abs(p));
+p      = psi * diag( psizs ) * bessel * 1i * pi / rhozs;
+tl     = -20 * log10( abs(p) );
 tl_zr  = interp1(z,tl,zr,'linear');
 
 end
