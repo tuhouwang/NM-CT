@@ -323,8 +323,8 @@ function a = Normalization(eigvectorw,eigvectorb,nmodes,...
 
     a = zeros(nmodes, 1);
 
-    P1      = zeros(Nw+1, 1);
-    P2      = zeros(Nb+1, 1);
+    P1      = zeros(1, Nw+1);
+    P2      = zeros(1, Nb+1);
     
     k       = 0 : 2 : Nw;
     P1(k+1) = -2 ./ (k.^2 - 1);    
@@ -338,8 +338,8 @@ function a = Normalization(eigvectorw,eigvectorb,nmodes,...
         f1 = Rw * f1;        
         f2 = Rb * f2;
 
-        a(j) = sqrt(P1' * f1 * interface / 2 + ...
-                    P2' * f2 * (bottom - interface) / 2);
+        a(j) = sqrt(P1 * f1 * interface / 2 + ...
+                    P2 * f2 * (bottom - interface) / 2);
     end
 
 end
