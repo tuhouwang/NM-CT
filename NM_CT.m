@@ -53,10 +53,10 @@ alphab = Interpolation(depb,alphab,Nb,interface,bottom);
 [nmodes,kr,eigvectorw,eigvectorb] = NumofModes(w,kr,...
     eigvectorw,eigvectorb,cpmax);
 
-[psi,z] = GenerateModes(eigvectorw,eigvectorb,nmodes,dz,...
-    rhow,rhob,interface,bottom);
+[psi,psizs,z] = GenerateModes(eigvectorw,eigvectorb,nmodes,dz,...
+    zs,rhow,rhob,interface,bottom);
 
-[tl,tl_zr] = SynthesizeSoundField(nmodes,nr,r,kr,zs,rhozs,dz,psi,zr);
+[tl,tl_zr] = SynthesizeSoundField(nmodes,nr,r,z,kr,rhozs,psizs,psi,zr);
 
 %---------------print the results-------------------
 ShowWavenumbers(kr,casename);
@@ -110,7 +110,7 @@ function [casename,Nw,Nb,cpmax,dr,zs,zr,rmax,freq,interface,...
 
     if((interface / dz - floor(interface / dz)) ~=0 ||...
              (bottom / dz - floor(bottom / dz)) ~=0)
-        error('Error! The input d unsuitable!');
+        error('Error! The input dz unsuitable!');
     end
 
     if((rmax / dr - floor(rmax / dr)) ~= 0)
@@ -344,11 +344,12 @@ function a = Normalization(eigvectorw,eigvectorb,nmodes,...
 
 end
 
-function [psi,z] = GenerateModes(eigvectorw,eigvectorb,nmodes,dz,...
-    rhow,rhob,interface,bottom)
+function [psi,psizs,z] = GenerateModes(eigvectorw,eigvectorb,nmodes,dz,...
+    zs,rhow,rhob,interface,bottom)
 
     zt1  = 0 : dz : interface;
     zt2  = interface : dz : bottom;
+    z    = 0 : dz : bottom;
 
     xt1  = -2/interface * zt1 + 1;
     xt2  = -2/(bottom-interface)*zt2+(bottom+interface)/(bottom-interface);
@@ -359,16 +360,15 @@ function [psi,z] = GenerateModes(eigvectorw,eigvectorb,nmodes,dz,...
 
     a    = Normalization(eigvectorw,eigvectorb,...
            nmodes,rhow,rhob,interface,bottom);
-
+    
     for j = 1 : nmodes
-        psi(:,j) = psi(:,j) / a(j);
+        psi(:,j)  = psi(:,j) / a(j);
     end
-
-    z = 0 : dz : bottom;
-
+    
+    psizs = interp1(z,psi,zs,'linear');
 end
 
-function [tl,tl_zr] = SynthesizeSoundField(nmodes,nr,r,kr,zs,rhozs,dz,psi,zr)
+function [tl,tl_zr] = SynthesizeSoundField(nmodes,nr,r,z,kr,rhozs,psizs,psi,zr)
 
     bessel = zeros(nmodes,nr);
     for im = 1 : nmodes
@@ -376,13 +376,12 @@ function [tl,tl_zr] = SynthesizeSoundField(nmodes,nr,r,kr,zs,rhozs,dz,psi,zr)
             bessel(im,ir) = besselh(0,1,r(ir)*kr(im));
         end
     end
-    
-    s   = round(zs / dz) + 1;
-    psi = psi * diag(psi(s,:));
+       
+    psi = psi * diag(psizs);
     p   = psi * bessel * 1i * pi / rhozs;
 
     tl    = -20 * log10(abs(p));
-    tl_zr = tl(round(zr / dz) + 1,:);
+    tl_zr = interp1(z,tl,zr,'linear');
 
 end
 
