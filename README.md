@@ -109,19 +109,19 @@ The "`input.txt`" file include:
 The plots resulting from the above dialog are as
   follows:
 
-<img src="img/image2.png" style="zoom:25%;" />
+<img src="img/d1.png" style="zoom:25%;" />
 
 Figure 1. Complex horizontal wavenumbers.
 
-<img src="img/image3.png" style="zoom:25%;" />
+<img src="img/d2.png" style="zoom:25%;" />
 
 Figure 2. Mode number 2 versus depth.
 
-<img src="img/image4.png" style="zoom:25%;" />
+<img src="img/d3.png" style="zoom:25%;" />
 
 Figure 3. Transmission loss versus range for a receiver at a depth of
 100 meters.
 
-<img src="img/image5.png" style="zoom:25%;" />
+<img src="img/d4.png" style="zoom:25%;" />
 
 Figure 4. A colorful plot of transmission loss, range versus depth.
