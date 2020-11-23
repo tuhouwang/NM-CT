@@ -15,8 +15,8 @@
 % You should have received a copy of the GNU General Public License along |
 % with this program. If not, see <http://www.gnu.org/licenses/>.          |
 %                                                                         |
-% Originally developed as part of the author's dissertation (H.Tu, Y.Wang,|
-% Q. Lan et al., A Chebyshev-Tau spectral method for normal modes of      |
+% Originally developed as part of the author's article (H.Tu, Y.Wang, Q.  |
+% Lan et al., A Chebyshev-Tau spectral method for normal modes of         |
 % underwater sound propagation with a layered marine environment, Journal |
 % of Sound and Vibration, https://doi.org/10.1016/j.jsv.2020.115784) under|
 % the supervision of Prof. Yongxian Wang, National University of Defense  |
@@ -36,13 +36,8 @@ tic;
     Lowerboundary,tlmin,tlmax,depw,cw,rhow,alphaw,...
     depb,cb,rhob,alphab] = ReadEnvParameter('input.txt');
 
-cw     = Interpolation(depw,cw,Nw,0,interface);
-cb     = Interpolation(depb,cb,Nb,interface,bottom);
-rhow   = Interpolation(depw,rhow,Nw,0,interface);
-rhob   = Interpolation(depb,rhob,Nb,interface,bottom);
-alphaw = Interpolation(depw,alphaw,Nw,0,interface);
-alphab = Interpolation(depb,alphab,Nb,interface,bottom);
-
+[cw,rhow,alphaw] = Interpolation(depw,cw,rhow,alphaw,Nw,  0,   interface);
+[cb,rhob,alphab] = Interpolation(depb,cb,rhob,alphab,Nb,interface,bottom);
 %----------------------------------------------
 [nr,r,rhozs,kw,kb,w] = Initialization(Nw,Nb,freq,rmax,dr,zs,...
     rhow,rhob,cw,cb,alphaw,alphab,interface,bottom);
@@ -58,7 +53,7 @@ alphab = Interpolation(depb,alphab,Nb,interface,bottom);
 
 [tl,tl_zr] = SynthesizeSoundField(r,z,kr,rhozs,psizs,psi,zr);
 
-%---------------print the results-------------------
+%---------------Show the results-------------------
 ShowWavenumbers(kr,casename);
 % ShowMode(psi,z);
 ShowTLcurve(r,zr,tl_zr);
@@ -130,11 +125,13 @@ fclose(fid);
 
 end
 
-function c = Interpolation(depc,c,N,s,t)
+function [c1,c2,c3] = Interpolation(dep,c1,c2,c3,N,s,t)
 
 x  = cos( (0 : N) * pi / N )';
 z  = ( (t + s) / (t - s) - x ) * (t - s) / 2.0;
-c  = interp1(depc,c,z,'linear');
+c1  = interp1(dep,c1,z,'linear');
+c2  = interp1(dep,c2,z,'linear');
+c3  = interp1(dep,c3,z,'linear');
 
 end
 
