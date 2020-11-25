@@ -1,7 +1,7 @@
 **`NM_CT_readme`, Jul. 5, 2020, Houwang Tu, NUDT**
 
-The program `NM_CT.m` computes the range-independent modal acoustic field
-using the Chebyshev-Tau spectral method (`NM_CT`). The method is
+The program `NM_CT.m` computes the range-independent modal acoustic field in
+Fig.1 using the Chebyshev-Tau spectral method (`NM_CT`). The method is
 described in the article (H. Tu, Y. Wang, Q. Lan et al., A Chebyshev-Tau
 spectral method for normal modes of underwater sound propagation with a
 layered marine environment, https://doi.org/10.1016/j.jsv.2020.115784).
@@ -108,20 +108,23 @@ The "`input.txt`" file include:
 
 The plots resulting from the above dialog are as
   follows:
+<img src="img/env.png" style="zoom:25%;" />
 
-<img src="img/d1.png" style="zoom:25%;" />
+Figure 1. Stratified marine environment.
 
-Figure 1. Complex horizontal wavenumbers.
+<img src="img/image2.png" style="zoom:25%;" />
 
-<img src="img/d2.png" style="zoom:25%;" />
+Figure 2. Complex horizontal wavenumbers.
 
-Figure 2. Mode number 2 versus depth.
+<img src="img/image3.png" style="zoom:25%;" />
 
-<img src="img/d3.png" style="zoom:25%;" />
+Figure 3. Mode number 2 versus depth.
 
-Figure 3. Transmission loss versus range for a receiver at a depth of
+<img src="img/image4.png" style="zoom:25%;" />
+
+Figure 4. Transmission loss versus range for a receiver at a depth of
 100 meters.
 
-<img src="img/d4.png" style="zoom:25%;" />
+<img src="img/image5.png" style="zoom:25%;" />
 
-Figure 4. A colorful plot of transmission loss, range versus depth.
+Figure 5. A colorful plot of transmission loss, range versus depth.
