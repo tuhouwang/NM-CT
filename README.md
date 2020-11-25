@@ -112,19 +112,19 @@ The plots resulting from the above dialog are as
 
 Figure 1. Stratified marine environment.
 
-<img src="img/image2.png" style="zoom:25%;" />
+<img src="img/d1.png" style="zoom:25%;" />
 
 Figure 2. Complex horizontal wavenumbers.
 
-<img src="img/image3.png" style="zoom:25%;" />
+<img src="img/d2.png" style="zoom:25%;" />
 
 Figure 3. Mode number 2 versus depth.
 
-<img src="img/image4.png" style="zoom:25%;" />
+<img src="img/d3.png" style="zoom:25%;" />
 
 Figure 4. Transmission loss versus range for a receiver at a depth of
 100 meters.
 
-<img src="img/image5.png" style="zoom:25%;" />
+<img src="img/d4.png" style="zoom:25%;" />
 
 Figure 5. A colorful plot of transmission loss, range versus depth.
