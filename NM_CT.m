@@ -290,9 +290,9 @@ v2 = - (L22 \ L21) * v;
 eigvectorw = [v(1  : Nw-1, :)    ; v2(1:2, :)];
 eigvectorb = [v(Nw : Nw+Nb-2, :) ; v2(3:4, :)];
 
-k2      = sqrt(diag(k2));
-[~,ind] = sort(real(k2),'descend');
-kr      = k2(ind);
+kr      = sqrt(diag(k2));
+[~,ind] = sort(real(kr),'descend');
+kr      = kr(ind);
 
 eigvectorw = eigvectorw(:,ind);
 eigvectorb = eigvectorb(:,ind);
