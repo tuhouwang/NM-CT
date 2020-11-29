@@ -104,29 +104,28 @@ The "`input.txt`" file include:
   points in each. It is necessary that `depw(nw)=depb(1)` where the
   density usually has a discontinuity. The first entry `depw(1)=0` is the
   free surface. The last entry `depb(nb)=H` determines the total thickness
-  of the waveguide.
- 
-<img src="img/env.png" style="zoom:25%;" />
+  of the waveguide. 
 
-Figure 1. Stratified marine environment.
+  <img src="img/env.png" style="zoom:25%;" />
 
+  Figure 1. Layered marine environment.
 
 The plots resulting from the above dialog are as
   follows:
 
-<img src="img/d1.png" style="zoom:25%;" />
+<img src="img/image2.png" style="zoom:25%;" />
 
 Figure 2. Complex horizontal wavenumbers.
 
-<img src="img/d2.png" style="zoom:25%;" />
+<img src="img/image3.png" style="zoom:25%;" />
 
 Figure 3. Mode number 2 versus depth.
 
-<img src="img/d3.png" style="zoom:25%;" />
+<img src="img/image4.png" style="zoom:25%;" />
 
 Figure 4. Transmission loss versus range for a receiver at a depth of
 100 meters.
 
-<img src="img/d4.png" style="zoom:25%;" />
+<img src="img/image5.png" style="zoom:25%;" />
 
 Figure 5. A colorful plot of transmission loss, range versus depth.
