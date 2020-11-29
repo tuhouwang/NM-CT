@@ -104,13 +104,15 @@ The "`input.txt`" file include:
   points in each. It is necessary that `depw(nw)=depb(1)` where the
   density usually has a discontinuity. The first entry `depw(1)=0` is the
   free surface. The last entry `depb(nb)=H` determines the total thickness
-  of the waveguide. 
-
-The plots resulting from the above dialog are as
-  follows:
+  of the waveguide.
+ 
 <img src="img/env.png" style="zoom:25%;" />
 
 Figure 1. Stratified marine environment.
+
+
+The plots resulting from the above dialog are as
+  follows:
 
 <img src="img/d1.png" style="zoom:25%;" />
 
