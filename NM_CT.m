@@ -214,7 +214,7 @@ function fk = ChebTransFFT(N, fx)
 
     fk = fft([fx; flipud(fx(2:N))]);              % Extend and compute fft
     fk = fk(1:N+1).*[0.5; ones(N-1,1); 0.5]/N;    % fk contains Chebyshev
-                                              % coefficients of fx
+                                                  % coefficients of fx
 end
 
 function fx = InvChebTrans(fk,z)
@@ -325,8 +325,6 @@ function a = Normalization(eigvectorw,eigvectorb,nmodes,...
     Rw = ConvolutionMatrix(ChebTransFFT(Nw, 1./rhow));
     Rb = ConvolutionMatrix(ChebTransFFT(Nb, 1./rhob));
 
-    a = zeros(nmodes, 1);
-
     P1      = zeros(1, Nw+1);
     P2      = zeros(1, Nb+1);
 
@@ -334,17 +332,17 @@ function a = Normalization(eigvectorw,eigvectorb,nmodes,...
     P1(k+1) = -2 ./ (k.^2 - 1);
     k       = 0 : 2 : Nb;
     P2(k+1) = -2 ./ (k.^2 - 1);
-
+    
+    f1      = zeros(Nw + 1, nmodes);
+    f2      = zeros(Nb + 1, nmodes);
+    
     for j = 1 : nmodes
-
-        f1 = ConvolutionMatrix(eigvectorw(:,j)) * eigvectorw(:,j);
-        f2 = ConvolutionMatrix(eigvectorb(:,j)) * eigvectorb(:,j);
-        f1 = Rw * f1;
-        f2 = Rb * f2;
-
-        a(j) = sqrt( P1 * f1 * interface / 2 + ...
-            P2 * f2 * (bottom - interface) / 2 );
+        f1(:,j) = ConvolutionMatrix(eigvectorw(:,j)) * eigvectorw(:,j);
+        f2(:,j) = ConvolutionMatrix(eigvectorb(:,j)) * eigvectorb(:,j);
     end
+    
+    a = sqrt( P1 * Rw * f1 * interface / 2 + ...
+        P2 * Rb * f2 * (bottom - interface) / 2 );
 
 end
 
