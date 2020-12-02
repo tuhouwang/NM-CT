@@ -84,16 +84,16 @@ function [casename,Nw,Nb,cpmax,dr,zs,zr,rmax,freq,interface,...
     nw            = fscanf(fid,'%d',1);
     nb            = fscanf(fid,'%d',1);
     if(interface > 0.0 && interface < bottom && Nw > 2 && Nb > 2)
-        W_Profile    = fscanf(fid,'%f %f',[4,nw]);
-        depw(1:nw)   = W_Profile(1,1:nw);
-        cw(1:nw)     = W_Profile(2,1:nw);
-        rhow(1:nw)   = W_Profile(3,1:nw);
-        alphaw(1:nw) = W_Profile(4,1:nw);
-        B_Profile    = fscanf(fid,'%f %f',[4,nb]);
-        depb         = B_Profile(1,1:nb);
-        cb(1:nb)     = B_Profile(2,1:nb);
-        rhob(1:nb)   = B_Profile(3,1:nb);
-        alphab(1:nb) = B_Profile(4,1:nb);
+        WProfile  = fscanf(fid,'%f %f',[4,nw]);
+        depw      = WProfile(1,1:nw);
+        cw        = WProfile(2,1:nw);
+        rhow      = WProfile(3,1:nw);
+        alphaw    = WProfile(4,1:nw);
+        BProfile  = fscanf(fid,'%f %f',[4,nb]);
+        depb      = BProfile(1,1:nb);
+        cb        = BProfile(2,1:nb);
+        rhob      = BProfile(3,1:nb);
+        alphab    = BProfile(4,1:nb);
     else
         error('Error! h must less than H and greater than 0!');
     end
