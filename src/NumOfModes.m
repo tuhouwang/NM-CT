@@ -1,4 +1,4 @@
-function [nmodes, kr, v1, v2] = NumofModes(w, kr, v1, v2, cpmax)
+function [nmodes, kr, v1, v2] = NumOfModes(w, kr, v1, v2, cpmax)
 
     cp     = w ./ real(kr);
 
