@@ -32,31 +32,31 @@ close all;
 clc;
 tic;
 
-[casename,Nw,Nb,cpmax,freq,zs,zr,rmax,dr,interface,bottom,...
-    dz,Lowerboundary,tlmin,tlmax,depw,cw,rhow,alphaw,...
-    depb,cb,rhob,alphab] = ReadEnvParameter('input.txt');
+[casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, interface, bottom, ...
+    dz, Lowerboundary, tlmin, tlmax, depw, cw, rhow, alphaw, ...
+    depb, cb, rhob, alphab] = ReadEnvParameter('input.txt');
 
-[cw,rhow,alphaw] = Interpolation(depw,cw,rhow,alphaw,Nw,  0,   interface);
-[cb,rhob,alphab] = Interpolation(depb,cb,rhob,alphab,Nb,interface,bottom);
+[cw, rhow, alphaw] = Interpolation(depw, cw, rhow, alphaw, Nw,  0,   interface);
+[cb, rhob, alphab] = Interpolation(depb, cb, rhob, alphab, Nb, interface, bottom);
 %----------------------------------------------
-[nr,r,rhozs,kw,kb,w] = Initialization(Nw,Nb,freq,rmax,dr,zs,...
-               rhow,rhob,cw,cb,alphaw,alphab,interface,bottom);
+[nr, r, rhozs, kw, kb, w] = Initialization(Nw, Nb, freq, rmax, dr, zs, ...
+    rhow, rhob, cw, cb, alphaw, alphab, interface, bottom);
 
-[kr,eigvectorw,eigvectorb] = EigenValueVector(Nw,Nb,interface,...
-                           bottom,kw,kb,rhow,rhob,Lowerboundary);
+[kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, interface, ...
+    bottom, kw, kb, rhow, rhob, Lowerboundary);
 
-[nmodes,kr,eigvectorw,eigvectorb] = NumofModes(w,kr,...
-                          eigvectorw,eigvectorb,cpmax);
+[nmodes, kr, eigvectorw, eigvectorb] = NumofModes(w, kr, ...
+    eigvectorw, eigvectorb, cpmax);
 
-[psi,psizs,z] = GenerateModes(eigvectorw,eigvectorb,nmodes,dz,...
-                                  zs,rhow,rhob,interface,bottom);
+[psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
+    zs, rhow, rhob, interface, bottom);
 
-[tl,tl_zr] = SynthesizeSoundField(r,z,kr,rhozs,psizs,psi,zr);
+[tl, tl_zr] = SynthesizeSoundField(r, z, kr, rhozs, psizs, psi, zr);
 
 %---------------Show the results-------------------
-ShowWavenumbers(kr,casename);
-ShowTLcurve(r,zr,tl_zr);
-ShowSoundField(r,z,tl,tlmin,tlmax,casename,interface);
-% ShowMode(psi,z);
-% SaveSoundField('tl.bin',tlmin,tlmax,r,z,tl);
+ShowWavenumbers(kr, casename);
+ShowTLcurve(r, zr, tl_zr);
+ShowSoundField(r, z, tl, tlmin, tlmax, casename, interface);
+% ShowMode(psi, z);
+% SaveSoundField('tl.bin', tlmin, tlmax, r, z, tl);
 toc;

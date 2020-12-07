@@ -1,5 +1,5 @@
-function a = Normalization(eigvectorw,eigvectorb,nmodes,...
-                                rhow,rhob,interface,bottom)
+function a = Normalization(eigvectorw, eigvectorb, nmodes, ...
+                           rhow, rhob, interface, bottom)
 
     Nw = size(eigvectorw, 1) - 1;
     Nb = size(eigvectorb, 1) - 1;
@@ -18,8 +18,8 @@ function a = Normalization(eigvectorw,eigvectorb,nmodes,...
     f2      = zeros(Nb + 1, nmodes);
     
     for j = 1 : nmodes
-        f1(:,j) = ConvolutionMatrix(eigvectorw(:,j)) * eigvectorw(:,j);
-        f2(:,j) = ConvolutionMatrix(eigvectorb(:,j)) * eigvectorb(:,j);
+        f1(:, j) = ConvolutionMatrix(eigvectorw(:, j)) * eigvectorw(:, j);
+        f2(:, j) = ConvolutionMatrix(eigvectorb(:, j)) * eigvectorb(:, j);
     end
     
     a = sqrt( P1 * Rw * f1 * interface / 2 + ...
