@@ -13,10 +13,10 @@ function [psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
     psi2 = InvChebTrans(eigvectorb, xt2);
     psi  = [psi1(1 : length(xt1) - 1, :); psi2];
 
-    modes_norm = Normalization(eigvectorw, eigvectorb, ...
+    norm = Normalization(eigvectorw, eigvectorb, ...
                  nmodes, rhow, rhob, interface, bottom);
 
-    psi   = psi * diag(1 ./ modes_norm);
+    psi   = psi * diag(1 ./ norm);
     psizs = interp1(z, psi, zs, 'linear');
     
 end
