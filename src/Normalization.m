@@ -10,9 +10,9 @@ function a = Normalization(eigvectorw, eigvectorb, nmodes, ...
     P2      = zeros(1, Nb+1);
 
     k       = 0 : 2 : Nw;
-    P1(k+1) = -2 ./ (k.^2 - 1);
+    P1(k+1) = -2 ./ (k .^ 2 - 1);
     k       = 0 : 2 : Nb;
-    P2(k+1) = -2 ./ (k.^2 - 1);
+    P2(k+1) = -2 ./ (k .^ 2 - 1);
     
     f1      = zeros(Nw + 1, nmodes);
     f2      = zeros(Nb + 1, nmodes);

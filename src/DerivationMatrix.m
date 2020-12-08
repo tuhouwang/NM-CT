@@ -7,6 +7,6 @@ function D  = DerivationMatrix(n)
         D(k, j) = 2 * j - 2;
     end
     
-    D(1, :) = D(1, :) / 2;
+    D(1, :) = D(1, :) * 0.5;
 
 end
