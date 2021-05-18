@@ -54,7 +54,7 @@ tic;
 [tl, tl_zr] = SynthesizeSoundField(r, z, kr, rhozs, psizs, psi, zr);
 
 %---------------Show the results-------------------
-% ShowWavenumbers(kr, casename);
+ShowWavenumbers(kr, casename);
 % ShowTLcurve(r, zr, tl_zr);
 % ShowSoundField(r, z, tl, tlmin, tlmax, casename, interface);
 % ShowMode(psi, z);

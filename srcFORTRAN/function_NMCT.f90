@@ -362,25 +362,26 @@ contains
         !Interplating to the CGL points
         allocate(cw(Nw+1), cb(Nb+1), rhow(Nw+1), rhob(Nb+1), alphaw(Nw+1), alphab(Nb+1))
 
-        call Interpolation(depw,temp_cw,cw,temp_rhow,rhow,temp_alphaw,alphaw,Nw,0.0_rkind,hinterface)	
-        call Interpolation(depb,temp_cb,cb,temp_rhob,rhob,temp_alphab,alphab,Nb,hinterface,Hbottom)	
+        call Interpolation(depw,temp_cw,cw,temp_rhow,rhow,temp_alphaw,alphaw,Nw)	
+        call Interpolation(depb,temp_cb,cb,temp_rhob,rhob,temp_alphab,alphab,Nb)	
 
         deallocate(depw, depb, temp_cw, temp_cb, temp_rhow, temp_rhob, temp_alphaw, temp_alphab)
 
     end subroutine ReadEnvParameter
 
-    subroutine Interpolation(dep,b1,b2,c1,c2,d1,d2,N,s,t)
+    subroutine Interpolation(dep,b1,b2,c1,c2,d1,d2,N)
         implicit none
         integer,       intent(in)   ::N
-        real(rkind),   intent(in)   ::dep(:), b1(:), c1(:), d1(:), s, t
+        real(rkind),   intent(in)   ::dep(:), b1(:), c1(:), d1(:)
         real(rkind),   intent(out)  ::b2(:), c2(:), d2(:)
         real(rkind)                 ::x(N+1), z(N+1)
         integer                     ::i, j, m
         
         m = size(dep)
+		
         do i = 1, N + 1
             x(i) = cos((i - 1) * pi / N)
-            z(i) = ((t + s) / (t - s) - x(i)) * (t - s) / 2.0
+            z(i) = ((dep(m) + dep(1)) / (dep(m) - dep(1)) - x(i)) * (dep(m) - dep(1)) / 2.0
         end do
 
         do i=1,N+1	
