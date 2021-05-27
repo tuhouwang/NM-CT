@@ -33,6 +33,7 @@ program NMCT
     implicit none
     
     external zgeev
+	external zgesv
     !---------------------------------------------------------------------------------
     ! Declare the variable needed later.
     character(len=MAX_FILENAME_LEN)             :: casename
@@ -59,7 +60,7 @@ program NMCT
     real(rkind),   allocatable, dimension(:)    :: r
     complex(rkind),allocatable, dimension(:)    :: kw, kb, kr
     complex(rkind),allocatable, dimension(:, :) :: eigvectorw, eigvectorb, psi
-    real(rkind),   allocatable, dimension(:)    :: z
+    real(rkind),   allocatable, dimension(:)    :: z(:)
     real(rkind),   allocatable, dimension(:, :) :: tl
 
     call ReadEnvParameter(casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, hinterface, Hbottom,&
@@ -70,7 +71,7 @@ program NMCT
     
     call EigenValueVector(Nw, Nb, hinterface, Hbottom, kw, kb, rhow, rhob,&
     				Lowerboundary, kr, eigvectorw, eigvectorb)
-    
+
     call NumofModes(freq,kr,nmodes,cpmax)
     
     call GenerateModes(nmodes,dz,hinterface,Hbottom,eigvectorw,eigvectorb,psi,z)

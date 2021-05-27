@@ -196,65 +196,6 @@ contains
 
 end module cheb_mod
 
-
-module linsys_mod
-    use param_mod
-    implicit none
-
-contains
-
-    subroutine MatrcInv(A, IA)
-        implicit none
-        complex(rkind)              :: A(:, :), IA(:, :)
-        complex(rkind), allocatable :: B(:, :)
-        integer                     :: m, i
-
-        m = size(A, 1)
-        allocate ( B(m, m) )
-        IA = 0.0_rkind
-        do i = 1, m
-            IA(i, i) = 1.0_rkind
-        end do
-        B = A
-        call MatrcUpper(B, IA)
-        call MatrcLower(B, IA)
-        do i = 1, m
-            IA(i, :) = IA(i, :) / B(i, i)
-        end do
-        deallocate(B)
-    end subroutine MatrcInv
-
-    subroutine MatrcUpper(P, S)
-        implicit none
-        integer        :: m, i, j
-        complex(rkind) :: P(:, :), S(:, :), E
-        m = size(P, 1)
-        do i = 1, m-1
-        do j = i+1, m
-            E = P(j, i) / P(i, i)
-            P(j, i:m) = P(j, i:m) - P(i, i:m) * E
-            S(j, :) = S(j, :) - S(i, :) * E
-        end do
-        end do
-    end subroutine MatrcUpper
-
-    subroutine MatrcLower(P, S)
-        implicit none
-        integer        :: m, i, j
-        complex(rkind) :: P(:, :), S(:, :), E
-
-        m = size(P, 1)
-        do i = m, 2, -1
-        do j = i-1, 1, -1
-            E = P(j, i) / P(i, i)
-            P(j, 1:m) = P(j, 1:m) - P(i, 1:m) * E
-            S(j, :) = S(j, :) - S(i, :) * E
-        end do
-        end do
-    end subroutine MatrcLower
-
-end module linsys_mod
-
 module util_mod
     use param_mod
     implicit none
@@ -272,10 +213,10 @@ contains
         end if
     end subroutine assert
 end module util_mod
+
 module nmct_mod
     use param_mod
     use cheb_mod
-    use linsys_mod
     implicit none
 
 contains
@@ -499,13 +440,12 @@ contains
         complex(rkind)                             :: L21(4, Nw+Nb-2)
         complex(rkind)                             :: L22(4, 4)
         complex(rkind)                             :: L(Nw+Nb-2, Nw+Nb-2)
-        complex(rkind)                             :: IL22(4, 4)
         complex(rkind)                             :: v2(4, Nw+Nb-2)
         complex(rkind)                             :: VL(Nw+Nb-2)
         complex(rkind)                             :: VR(Nw+Nb-2, Nw+Nb-2)
         complex(rkind)                             :: WORK(2*(Nw+Nb-2))
         real(rkind)                                :: RWORK(2*(Nw+Nb-2))
-        integer                                    :: i, info, j(1)
+        integer                                    :: i, info, j(1), IPIV(4)
 
         allocate(kr(Nw+Nb-2), eigvectorw(Nw+1, Nw+Nb-2), eigvectorb(Nb+1, Nw+Nb-2))
 
@@ -589,12 +529,12 @@ contains
         L21 = U(Nw+Nb-1:Nw+Nb+2, 1:Nw+Nb-2)
         L22 = U(Nw+Nb-1:Nw+Nb+2, Nw+Nb-1:Nw+Nb+2)
 
-        call MatrcInv(L22, IL22)
-        L = L11 - matmul(L12, matmul(IL22, L21))
+		call zgesv(4,Nw+Nb-2,L22,4,IPIV,L21,4,info)
+		L = L11 - matmul(L12, L21)
 
         call zgeev('N', 'V', Nw+Nb-2, L, Nw+Nb-2, kr, VL, 1, VR, Nw+Nb-2, WORK, 2*(Nw+Nb-2), RWORK, INFO)
 
-        v2 = -matmul(matmul(IL22, L21), VR)
+		v2 = -matmul(L21, VR)
 
         eigvectorw = 0.0_rkind
         eigvectorb = 0.0_rkind
