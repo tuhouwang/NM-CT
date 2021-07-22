@@ -19,7 +19,7 @@ format of the binary sound field file "`tl.bin`", and the
 `plot_binary_tl.m` program can be used to read the sound field binary
 data and plot.
 
-The "input.txt" file contains the parameters defining the modal
+The "`input.txt`" file contains the parameters defining the modal
 calculation. See the following example:
 
 ```
