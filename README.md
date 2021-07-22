@@ -100,7 +100,7 @@ The "`input.txt`" file include:
   There are two tables of
   environmental parameter: one for the water column and one for the bottom
   sediment, both of their units are depth(m), speed(m/s),
-  density(gm/cm$^3$) and attenuation (dB/wavelength), with `nw` and `nb`
+  density(g/cm$^3$) and attenuation (dB/wavelength), with `nw` and `nb`
   points in each. It is necessary that `depw(nw)=depb(1)` where the
   density usually has a discontinuity. The first entry `depw(1)=0` is the
   free surface. The last entry `depb(nb)=H` determines the total thickness
