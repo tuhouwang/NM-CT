@@ -1,4 +1,4 @@
-**`NM_CT_readme`, Jul. 5, 2020, Houwang Tu, NUDT**
+**`NM_CT_readme`, Jul. 5, 2020, Houwang Tu, National University of Defense Technology**
 
 The program `NM_CT.m` computes the range-independent modal acoustic field in
 Fig.1 using the Chebyshev-Tau spectral method (`NM_CT`). The method is
