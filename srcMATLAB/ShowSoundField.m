@@ -4,13 +4,12 @@ function ShowSoundField(r, z, tl, tlmin, tlmax, casename, interface)
 
     figure;
     pcolor( r, z, tl); hold on;
-    plot(r, interface*ones(length(r)), 'k--', 'Linewidth', 1.5);
+    plot([0, max(r)], [interface, interface], 'k--', 'Linewidth', 1.5);
 
     title(casename);
     caxis([tlmin tlmax]); 
     colormap(flipud(jet));
     shading flat; 
-    colorbar; 
     view(0, -90);
     xlabel('Range (m)'); 
     ylabel('Depth (m)');
