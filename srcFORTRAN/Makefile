@@ -16,4 +16,4 @@ complex_bessel.o: complex_bessel.f
 	$(FC) -c $< -o $@
     
 clean:
-	-rm -rf *.o *.mod NMCT.exe tl.bin a.out
+	-rm -rf *.o *.mod NMCT.exe tl.bin

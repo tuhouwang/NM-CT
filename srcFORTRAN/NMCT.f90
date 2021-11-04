@@ -50,7 +50,7 @@ program NMCT
     real(rkind)                                 :: rmax
     real(rkind)                                 :: freq
     real(rkind)                                 :: hinterface
-    real(rkind)                                 :: Hbottom
+    real(rkind)                                 :: Hb
     real(rkind)                                 :: dz
     real(rkind)                                 :: tlmin
     real(rkind)                                 :: tlmax
@@ -58,30 +58,34 @@ program NMCT
     real(rkind),   allocatable, dimension(:)    :: rhow, alphaw, cw
     real(rkind),   allocatable, dimension(:)    :: rhob, alphab, cb
     real(rkind),   allocatable, dimension(:)    :: r
-    complex(rkind),allocatable, dimension(:)    :: kw, kb, kr
-    complex(rkind),allocatable, dimension(:, :) :: eigvectorw, eigvectorb, psi
-    real(rkind),   allocatable, dimension(:)    :: z(:)
+    complex(rkind),allocatable, dimension(:)    :: kw, kb
+    complex(rkind),allocatable, dimension(:)    :: kr
+    complex(rkind),allocatable, dimension(:, :) :: eigvectorw
+    complex(rkind),allocatable, dimension(:, :) :: eigvectorb
+    complex(rkind),allocatable, dimension(:, :) :: psi
+    real(rkind),   allocatable, dimension(:)    :: z
     real(rkind),   allocatable, dimension(:, :) :: tl
 
-    call ReadEnvParameter(casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, hinterface, Hbottom,&
-                    dz,Lowerboundary, tlmin, tlmax, rhow, rhob, alphaw, alphab, cw, cb, data_file)
-    
-    call Initialization(Nw, Nb, freq, rmax, dr, zs, rhow, rhob, cw, cb, alphaw,&
-    				alphab, hinterface, Hbottom, nr, r, rhozs, kw, kb)
-    
-    call EigenValueVector(Nw, Nb, hinterface, Hbottom, kw, kb, rhow, rhob,&
-    				Lowerboundary, kr, eigvectorw, eigvectorb)
+    call ReadEnvParameter(casename,Nw,Nb,cpmax,freq,zs,zr,rmax,dr,hinterface,Hb,&
+                    dz,Lowerboundary,tlmin,tlmax,rhow,rhob,alphaw,alphab,cw,cb,data_file)
+
+    call Initialization(Nw,Nb,freq,rmax,dr,zs,rhow,rhob,cw,cb,alphaw,&
+                    alphab,hinterface,Hb,nr,r,rhozs,kw,kb)
+
+    allocate(kr(Nw+Nb-2),eigvectorw(Nw+1,Nw+Nb-2),eigvectorb(Nb+1,Nw+Nb-2))
+    call EigenValueVector(Nw,Nb,hinterface,Hb,kw,kb,rhow,rhob,&
+                    Lowerboundary,kr,eigvectorw,eigvectorb)
 
     call NumofModes(freq,kr,nmodes,cpmax)
     
-    call GenerateModes(nmodes,dz,hinterface,Hbottom,eigvectorw,eigvectorb,psi,z)
+    call GenerateModes(nmodes,dz,hinterface,Hb,eigvectorw,eigvectorb,psi,z)
     
-    call Normalization(eigvectorw,eigvectorb,rhow,rhob,hinterface,Hbottom,Nw+1,Nb+1,nmodes,psi)
+    call Normalization(eigvectorw,eigvectorb,rhow,rhob,hinterface,Hb,Nw,Nb,nmodes,psi)
     
-    call SynthesizeSoundField(nmodes,nr,r,kr,rhozs,zs,dz,psi,tl)		
-    	
+    call SynthesizeSoundField(nmodes,nr,r,kr,rhozs,zs,dz,psi,tl)        
+        
     call SaveSoundField(filename,tlmin,tlmax,r,z,tl)
     
-    deallocate(rhow,rhob,alphaw,alphab,cw,cb,r,kw,kb,kr,eigvectorw,eigvectorb,psi,z,tl)	
+    deallocate(rhow,rhob,alphaw,alphab,cw,cb,r,kw,kb,kr,eigvectorw,eigvectorb,psi,z,tl)    
 
 end program NMCT
