@@ -30,48 +30,48 @@ contains
         implicit none
         real(rkind),	intent(in)  :: z (:)
         real(rkind),    intent(in)  :: fx(:)		
-		real(rkind)					:: ChebReal(size(z))
-		real(rkind)					:: fx2(size(z))
-        real(rkind) 				:: T(size(z),size(z)) 
+		real(rkind)		            :: ChebReal(size(z))
+        real(rkind)                 :: fx2(size(z))
+        real(rkind)                 :: T(size(z),size(z)) 
         integer                     :: m, i
-		
+        
         m = size(fx)           
         T = 0.0_rkind
         ChebReal = 0.0_rkind
 
         do i=0, m-1
-            T(:,i+1) = cos(i * acos(z))	  
+            T(:,i+1) = cos(i * acos(z))      
         enddo 
-		
-		fx2 = fx
+        
+        fx2    = fx
         fx2(1) = fx2(1) * 0.5_rkind
         fx2(m) = fx2(m) * 0.5_rkind
 
-        ChebReal = matmul(transpose(T),fx2)*2.0_rkind/(m-1)       
+        ChebReal    = matmul(transpose(T),fx2)*2.0_rkind/(m-1)       
         ChebReal(1) = ChebReal(1) * 0.5_rkind
         ChebReal(m) = ChebReal(m) * 0.5_rkind
         
     end function ChebReal
 
     function ChebComplex(fx, z)
-	
+    
         implicit none
-        real(rkind),	intent(in)  :: z (:)
-        complex(rkind), intent(in)  :: fx(:)		
-		complex(rkind)				:: ChebComplex(size(z))
-		complex(rkind)				:: fx2(size(z))
-        real(rkind) 				:: T(size(z),size(z)) 
+        real(rkind),    intent(in)  :: z (:)
+        complex(rkind), intent(in)  :: fx(:)        
+        complex(rkind)              :: ChebComplex(size(z))
+        complex(rkind)              :: fx2(size(z))
+        real(rkind)                 :: T(size(z),size(z)) 
         integer                     :: m, i
-		
+        
         m = size(fx)           
         T = 0.0_rkind
         ChebComplex = 0.0_rkind
 
         do i=0, m-1
-            T(:,i+1) = cos(i * acos(z))	  
+            T(:,i+1) = cos(i * acos(z))      
         enddo 
-		
-		fx2    = fx
+        
+        fx2    = fx
         fx2(1) = fx2(1) * 0.5_rkind
         fx2(m) = fx2(m) * 0.5_rkind
 
@@ -82,13 +82,13 @@ contains
     end function ChebComplex
 
     function InvChebMatrix(fk, z)
-	
+    
         implicit none
         real(rkind),    intent(in)  :: z(:)
         complex(rkind), intent(in)  :: fk(:, :)
-        complex(rkind)				:: InvChebMatrix(size(z),size(fk,2))
+        complex(rkind)              :: InvChebMatrix(size(z),size(fk,2))
         real(rkind)                 :: T(size(z), size(fk,1))
-	    integer                     :: i
+        integer                     :: i
 
         T  = 0.0_rkind
 
@@ -131,7 +131,7 @@ contains
         n  = size(v)
         do  i = 1, n
         do  k = 1, n
-             j= k-i+1
+             j = k-i+1
              if (1 <= j .and. j <= n) then
                 ConvolutionReal(k,i) = ConvolutionReal(k,i) + v(j) 
              endif
@@ -163,7 +163,7 @@ contains
         n  = size(v)
         do  i = 1, n
         do  k = 1, n
-             j= k-i+1
+             j = k-i+1
              if (1 <= j .and. j <= n) then
                 ConvolutionComplex(k,i) = ConvolutionComplex(k,i) + v(j) 
              endif
@@ -237,7 +237,7 @@ contains
         real(rkind), allocatable,        intent(out) :: rhob(:), alphab(:), cb(:)
         real(rkind), allocatable, dimension(:)       :: temp_alphaw, depw, temp_rhow, temp_cw
         real(rkind), allocatable, dimension(:)       :: temp_alphab, depb, temp_rhob, temp_cb
-        integer                                         :: n_w,n_b,i
+        integer                                      :: n_w,n_b,i
                                         
         open(unit=1, status='unknown', file=data_file) 
     
@@ -286,12 +286,12 @@ contains
                      'The input dz unsuitable!')
                      
         call assert(zs > 0 .and. zs < Hb .and. zr > 0 .and. zr < Hb,&
-                                            'Nw and Nb must greater than 2!')
+                                    'Nw and Nb must greater than 2!')
         
         call assert(rmax / dr == floor(rmax / dr), 'Please reinput the dr and rmax!')
 
         call assert(Lowerboundary == 0 .or. Lowerboundary == 1, &
-                     'The lower boundary must be rigid (0) or soft (1)!' )
+             'The lower boundary must be rigid (0) or soft (1)!' )
 
         !Interplating to the CGL points
         allocate(cw(Nw+1),cb(Nb+1),rhow(Nw+1),rhob(Nb+1),alphaw(Nw+1),alphab(Nb+1))
@@ -314,14 +314,14 @@ contains
         
         m = size(dep)
         
-        do i = 1, N + 1
+        do i = 1, N+1
             x(i) = cos((i - 1) * pi / N)
             z(i) = ((dep(m) + dep(1)) / (dep(m) - dep(1)) - x(i)) &
             * (dep(m) - dep(1)) / 2.0
         end do
 
-        do i=1,N+1    
-            do j=1,m-1
+        do i=1, N+1    
+            do j=1, m-1
                 if((z(i) >= dep(j)).and.(z(i) <= dep(j+1))) then
                     b2(i) = (z(i) - dep(j)) / (dep(j+1) - dep(j)) * b1(j+1)&
                             +(dep(j+1)-z(i))/ (dep(j+1) - dep(j)) * b1(j)
@@ -484,14 +484,14 @@ contains
         end do
         U(Nw+Nb, Nw+Nb-1)         = (-1.0_rkind) ** (Nw - 1)
         U(Nw+Nb, Nw+Nb)           = (-1.0_rkind) ** Nw
-        U(Nw+Nb, Nw:Nw+Nb-2)      = -1.0_rkind
-        U(Nw+Nb, Nw+Nb+1:Nw+Nb+2) = -1.0_rkind
+        U(Nw+Nb, Nw:Nw+Nb-2)      =  -1.0_rkind
+        U(Nw+Nb, Nw+Nb+1:Nw+Nb+2) =  -1.0_rkind
         !interface derivative
         do i = 1, Nw + 1
         Pu(i) = (-1.0_rkind) ** (i-1)
         end do
-        Pd = 1.0_rkind
-        Pu = 1.0_rkind / rhow(Nw+1) / hinterface * matmul(Pu, D1)
+        Pd =  1.0_rkind
+        Pu =  1.0_rkind / rhow(Nw+1) / hinterface * matmul(Pu, D1)
         Pd = -1.0_rkind / rhob(1) / (Hb - hinterface) * matmul(Pd, D2)
 
         U(Nw+Nb+1, 1:Nw-1)          = Pu(1:Nw-1)
@@ -592,7 +592,7 @@ contains
         psi1 = InvChebMatrix(eigvectorw(:, 1:nmodes), zt1)
         psi2 = InvChebMatrix(eigvectorb(:, 1:nmodes), zt2)
 
-        psi(1:size(zt1)-1, :)      = psi1(1:size(zt1)-1, :)
+        psi(1:size(zt1)-1, :)     = psi1(1:size(zt1)-1, :)
         psi(size(zt1):size(z), :) = psi2
 
         deallocate(psi1, psi2, zt1, zt2)
@@ -677,7 +677,7 @@ contains
         allocate(p(size(psi, 1), nr), tl(size(psi, 1), nr))
         s = ceiling(zs / dz)
         
-        psizs(:, :)=0.0_rkind
+        psizs(:, :) = 0.0_rkind
         do k = 1, nmodes
             psizs(k, k) = (zs / dz - s) * psi(s + 1, k) + ( s + 1 - zs / dz) * psi(s, k)
         end do
@@ -686,7 +686,7 @@ contains
         p   = matmul(psi, bessel)
         p   = p * ci * pi / rhozs
         
-        tl = - 20.0_rkind * log10(abs(p))
+        tl  = - 20.0_rkind * log10(abs(p))
         
     end subroutine SynthesizeSoundField
 
