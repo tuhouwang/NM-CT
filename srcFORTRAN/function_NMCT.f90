@@ -51,7 +51,7 @@ contains
         ChebReal(1) = ChebReal(1) * 0.5_rkind
         ChebReal(m) = ChebReal(m) * 0.5_rkind
         
-    end function ChebReal
+    end function
 
     function ChebComplex(fx, z)
     
@@ -79,7 +79,7 @@ contains
         ChebComplex(1) = ChebComplex(1) * 0.5_rkind
         ChebComplex(m) = ChebComplex(m) * 0.5_rkind
         
-    end function ChebComplex
+    end function
 
     function InvChebMatrix(fk, z)
     
@@ -98,7 +98,7 @@ contains
 
         InvChebMatrix = matmul(T, fk)
         
-    end function InvChebMatrix
+    end function
 
     function DerivationMatrix(m)
     
@@ -117,7 +117,7 @@ contains
         end do
         DerivationMatrix(1, :) = DerivationMatrix(1, :) * 0.5_rkind
     
-    end function DerivationMatrix
+    end function
     
     function ConvolutionReal(v)
     
@@ -149,7 +149,7 @@ contains
         enddo
         enddo
     
-    end function ConvolutionReal
+    end function
     
     function ConvolutionComplex(v)
     
@@ -181,7 +181,7 @@ contains
         enddo
         enddo
     
-    end function ConvolutionComplex
+    end function
 
 end module
 
@@ -200,9 +200,9 @@ contains
             write(*, *) 'ERROR : ', msg
             stop
         end if
-    end subroutine assert
+    end subroutine
     
-end module util_mod
+end module
 
 module nmct_mod
 
@@ -301,7 +301,7 @@ contains
 
         deallocate(depw,depb,temp_cw,temp_cb,temp_rhow,temp_rhob,temp_alphaw,temp_alphab)
 
-    end subroutine ReadEnvParameter
+    end subroutine
 
     subroutine Interpolation(dep,b1,b2,c1,c2,d1,d2,N)
         implicit none
@@ -348,7 +348,7 @@ contains
             endif
         enddo    
         
-    end subroutine Interpolation
+    end subroutine
 
     subroutine Initialization(Nw,Nb,freq,rmax,dr,zs,rhow,rhob,cw,cb,alphaw,alphab, &
         hinterface, Hb, nr, r, rhozs, kw, kb)
@@ -407,7 +407,7 @@ contains
         kw = w / cw * (1.0_rkind + ci * alphaw / (40.0_rkind * pi * log10(exp(1.0_rkind))))
         kb = w / cb * (1.0_rkind + ci * alphab / (40.0_rkind * pi * log10(exp(1.0_rkind))))
         
-    end subroutine Initialization
+    end subroutine
 
     subroutine EigenValueVector(Nw,Nb,hinterface,Hb,kw,kb,rhow,rhob, &
         Lowerboundary, kr, eigvectorw, eigvectorb)
@@ -533,7 +533,7 @@ contains
         eigvectorw = L  (1:Nw+1, :)
         eigvectorb = L11(1:Nb+1, :)
 
-    end subroutine EigenValueVector
+    end subroutine
 
     subroutine NumofModes(freq,kr,nmodes,cpmax)
        
@@ -556,7 +556,7 @@ contains
 
         deallocate(cp)
         
-    end subroutine NumofModes
+    end subroutine
 
     subroutine GenerateModes(nmodes,dz,hinterface,Hb,eigvectorw,eigvectorb,psi,z)
 
@@ -597,7 +597,7 @@ contains
 
         deallocate(psi1, psi2, zt1, zt2)
         
-    end subroutine GenerateModes
+    end subroutine
 
     subroutine Normalization(eigvectorw,eigvectorb,rhow,rhob,hinterface,Hb,Nw,Nb,nmodes,psi)
 
@@ -649,7 +649,7 @@ contains
             psi(:, i) = psi(:, i) / norm
         end do
 
-    end subroutine Normalization
+    end subroutine
 
     subroutine SynthesizeSoundField(nmodes,nr,r,kr,rhozs,zs,dz,psi,tl)
 
@@ -688,7 +688,7 @@ contains
         
         tl  = - 20.0_rkind * log10(abs(p))
         
-    end subroutine SynthesizeSoundField
+    end subroutine
 
     subroutine SaveSoundField(filename,tlmin,tlmax,r,z,tl)
 
@@ -702,6 +702,6 @@ contains
         write(20)  size(z), size(r), tlmin, tlmax, z, r, tl
         close(20)
         
-    end subroutine SaveSoundField
+    end subroutine
 
-end module nmct_mod
+end module
