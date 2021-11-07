@@ -281,9 +281,6 @@ contains
         call assert(depw(1) == 0.0 .and. depw(n_w) == hinterface .and. &
                     depb(1) == hinterface .and. depb(n_b) == Hb, &
                      'input sound profile is unsuitable!')
-        call assert(hinterface / dz == floor(hinterface / dz) .and. &
-                     Hb / dz == floor(Hb / dz), &
-                     'The input dz unsuitable!')
                      
         call assert(zs > 0 .and. zs < Hb .and. zr > 0 .and. zr < Hb,&
                                     'Nw and Nb must greater than 2!')
@@ -349,6 +346,38 @@ contains
         enddo    
         
     end subroutine
+
+	subroutine Interpolation_SSP(dep, c, dep2, c2)
+		implicit none
+		real   (rkind),intent(in) :: dep(:), dep2(:)
+		complex(rkind),intent(in) :: c(:)
+		complex(rkind),intent(out):: c2(:)
+		integer		              :: n_b, n_b2
+		integer		              :: i, j
+		n_b  = size(dep)
+		n_b2 = size(dep2)
+		
+		call assert(n_b  == size(c) ,  'The dimensions of the interpolation array do not match!') 
+		call assert(n_b2 == size(c2),  'The dimensions of the interpolation array do not match!') 
+			
+        do i = 1, n_b2	
+            do j = 1, n_b-1
+                if((dep2(i) >= dep(j)) .and. (dep2(i) <= dep(j+1))) then
+                    c2(i) = (dep2(i) - dep(j)) / (dep(j+1) - dep(j)) * c(j+1)&
+                            +(dep(j+1)-dep2(i))/ (dep(j+1) - dep(j)) * c(j)
+                endif				
+            enddo 
+            
+			if(dep2(i) > dep(n_b)) then
+				c2(i) = c(n_b)					
+			end if
+            
+			if(dep2(i) < dep(1)) then
+				c2(i) = c(1)				
+			endif
+        enddo	
+
+	end subroutine
 
     subroutine Initialization(Nw,Nb,freq,rmax,dr,zs,rhow,rhob,cw,cb,alphaw,alphab, &
         hinterface, Hb, nr, r, rhozs, kw, kb)
@@ -562,17 +591,18 @@ contains
 
         implicit none
         integer,                         intent(in)  :: nmodes
-        real(rkind),                     intent(in)  :: dz, hinterface, Hb
-        complex(rkind), dimension(:, :), intent(in)  :: eigvectorw, eigvectorb
-        real(rkind),    allocatable,     intent(out) :: z(:)
+        real(rkind),                     intent(in)  :: dz
+        real(rkind),    allocatable,     intent(out) :: z(:)	
+        real(rkind),                     intent(in)  :: hinterface, Hb		
+        complex(rkind), dimension(:, :), intent(in)  :: eigvectorw, eigvectorb		
         complex(rkind), allocatable,     intent(out) :: psi(:, :)
-        real(rkind),    allocatable, dimension(:)    :: zt1, zt2
-        complex(rkind), allocatable, dimension(:, :) :: psi1, psi2
+        real(rkind),    allocatable, dimension(:)    :: xt1, xt2, zt1, zt2, zt3
+        complex(rkind), allocatable, dimension(:, :) :: psi1, psi2, psit
         integer                                      :: i
 
-        allocate ( zt1(nint(hinterface / dz) + 1) )
-        allocate ( zt2(nint((Hb - hinterface) / dz) + 1) )
-        allocate ( z  (nint(Hb / dz) + 1) )
+        allocate (zt1(nint(hinterface / dz) + 1))
+        allocate (zt2(nint((Hb - hinterface) / dz) + 1))
+        allocate (z  (nint(Hb / dz) + 1) )
 
         do i = 1, nint(hinterface / dz) + 1
             zt1(i) = (i-1) * dz
@@ -580,23 +610,43 @@ contains
         do i = 1, nint((Hb - hinterface) / dz) + 1
             zt2(i) = hinterface + (i - 1) * dz
         end do
-        
         do i = 1, nint(Hb / dz) + 1
             z(i) = (i - 1) * dz
         end do
-        
-        zt1 = -2.0_rkind / hinterface * zt1 + 1.0_rkind
-        zt2 = -2.0_rkind / (Hb - hinterface) * zt2 + (Hb + hinterface) / (Hb - hinterface)
 
-        allocate ( psi1(size(zt1), nmodes), psi2(size(zt2), nmodes), psi(size(z), nmodes) )
-        psi1 = InvChebMatrix(eigvectorw(:, 1:nmodes), zt1)
-        psi2 = InvChebMatrix(eigvectorb(:, 1:nmodes), zt2)
+        xt1 = -2.0_rkind / hinterface * zt1 + 1.0_rkind
+        xt2 = -2.0_rkind / (Hb - hinterface) * zt2 + (Hb + hinterface) / (Hb - hinterface)
 
-        psi(1:size(zt1)-1, :)     = psi1(1:size(zt1)-1, :)
-        psi(size(zt1):size(z), :) = psi2
+		!为了保证数值稳定性
+		xt1(1) = 1.0_rkind
+		xt2(1) = 1.0_rkind
+		xt1(size(xt1)) = -1.0_rkind
+		xt2(size(xt2)) = -1.0_rkind
 
-        deallocate(psi1, psi2, zt1, zt2)
-        
+        allocate(psi1(size(xt1), nmodes), psi2(size(xt2), nmodes), psi(size(z), nmodes))
+        psi1 = InvChebMatrix(eigvectorw(:, 1:nmodes), xt1)
+        psi2 = InvChebMatrix(eigvectorb(:, 1:nmodes), xt2)	
+			
+		if(zt1(size(zt1)) /= zt2(1)) then
+			allocate(zt3(size(zt1)+size(zt2)),psit(size(zt1)+size(zt2),nmodes))
+			zt3(1:size(zt1)) = zt1
+			zt3(size(zt1)+1:size(zt1)+size(zt2)) = zt2
+			psit(1:size(zt1),:) = psi1
+			psit(size(zt1)+1:size(zt1)+size(zt2),:) = psi2
+		else
+			allocate(zt3(size(zt1)+size(zt2)-1),psit(size(zt1)+size(zt2)-1,nmodes))
+			zt3(1:size(zt1)) = zt1
+			zt3(size(zt1):size(zt1)+size(zt2)-1) = zt2
+			psit(1:size(zt1),:)= psi1
+			psit(size(zt1):size(zt1)+size(zt2)-1,:) = psi2			
+		endif	
+		
+		do i =1, nmodes
+			call Interpolation_SSP(zt3,psit(:,i),z,psi(:,i))
+		end do
+
+        deallocate(psi1, psi2, psit, xt1, xt2, zt1, zt2, zt3)
+
     end subroutine
 
     subroutine Normalization(eigvectorw,eigvectorb,rhow,rhob,hinterface,Hb,Nw,Nb,nmodes,psi)
