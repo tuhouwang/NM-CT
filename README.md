@@ -23,7 +23,7 @@ The "`input.txt`" file contains the parameters defining the modal
 calculation. See the following example:
 
 ```
-Example2                          ! casename
+Example8                          ! casename
 20                                ! Nw (truncation order of water column)
 20                                ! Nb (truncation order of bottom sediment)
 3500.0                            ! cpmax (maximum phase speed limit)
@@ -33,9 +33,9 @@ Example2                          ! casename
 3500.0                            ! rmax (receiver ranges(m))
 1                                 ! dr (discrete step in horizontal direction)
 50.0                              ! interface (thickness of water column)
-100.0                             ! bottom (thickness of ocean)
+100.0                             ! Hb (thickness of ocean)
 0.1                               ! dz (discrete step in depth direction)
-0                                 ! Lowerboundary (rigid/free lower boundary condition)
+A                                 ! Lowerboundary (rigid/free/halfspace lower boundary condition)
 40                                ! tlmin (minimum value of TL in colorbar)
 70                                ! tlmax (maximum value of TL in colorbar)
 2                                 ! nw (profiles' points in water column)
@@ -44,6 +44,7 @@ Example2                          ! casename
    50.0 1500.0  1.0   0.0
    50.0 1800.0  1.5   1.5         ! depb cb rhob alphab
   100.0 1800.0  1.5   1.5
+  100.0 2000.0  2.0   2.0         ! sound speed, density and attenuation of semi-infinite space
 
 ```
 
@@ -81,13 +82,13 @@ The "`input.txt`" file include:
 
 *  `interface` (thickness of water column, m),
 
-* `bottom` (thickness of ocean, m), `interface` must less than `bottom`, 
+* `Hb` (thickness of ocean, m), `interface` must less than `Hb`, 
 
 * `dz` (discrete step size in
   depth direction, m),
 
 *  `Lowerboundary` (User used to specify whether the seabottom
-  boundary condition is perfectly free '0' or perfectly rigid '1'), 
+  boundary condition is perfectly free 'V', perfectly rigid 'R' or semi-infinite space 'A'), 
 
 * `tlmin`
   and `tlmax` are the minmum and maximum value transmission loss,

@@ -1,5 +1,5 @@
 function a = Normalization(eigvectorw, eigvectorb, nmodes, ...
-                           rhow, rhob, interface, bottom)
+                           rhow, rhob, interface, Hb)
 
     Nw = size(eigvectorw, 1) - 1;
     Nb = size(eigvectorb, 1) - 1;
@@ -23,6 +23,6 @@ function a = Normalization(eigvectorw, eigvectorb, nmodes, ...
     end
     
     a = sqrt( P1 * Rw * f1 * interface / 2 + ...
-        P2 * Rb * f2 * (bottom - interface) / 2 );
+        P2 * Rb * f2 * (Hb - interface) / 2 );
 
 end

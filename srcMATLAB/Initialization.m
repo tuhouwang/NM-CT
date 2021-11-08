@@ -1,5 +1,5 @@
-function [nr, r, rhozs, kw, kb, w] = Initialization(Nw, Nb, freq, rmax, ...
-            dr, zs, rhow, rhob, cw, cb, alphaw, alphab, interface, bottom)
+function [nr, r, rhozs, kw, kb, kh, w] = Initialization(Nw, Nb, freq, rmax, ...
+            dr, zs, rhow, rhob, cw, cb, ch, alphaw, alphab, alphah, interface, Hb)
 
     w       = 2 * pi * freq;
     r       = dr : dr : rmax;
@@ -11,11 +11,12 @@ function [nr, r, rhozs, kw, kb, w] = Initialization(Nw, Nb, freq, rmax, ...
         rhozs  = interp1(z1, rhow, zs, 'linear');
     else
         x2     = cos( (0 : Nb) * pi / Nb)';
-        z2     = (1.0 - x2) * (bottom - interface) / 2 + interface;
+        z2     = (1.0 - x2) * (Hb - interface) / 2 + interface;
         rhozs  = interp1(z2, rhob, zs, 'linear');
     end
 
     kw = w ./ cw .* (1.0 + 1i * alphaw / (40.0 * pi * log10(exp(1.0))));
     kb = w ./ cb .* (1.0 + 1i * alphab / (40.0 * pi * log10(exp(1.0))));
+    kh = w ./ ch .* (1.0 + 1i * alphah / (40.0 * pi * log10(exp(1.0))));
 
 end

@@ -25,7 +25,7 @@ module cheb_mod
 
 contains
 
-    function ChebReal(fx, z)
+    function ChebReal(fx,z)
 	
         implicit none
         real(rkind),	intent(in)  :: z (:)
@@ -53,7 +53,7 @@ contains
         
     end function
 
-    function ChebComplex(fx, z)
+    function ChebComplex(fx,z)
     
         implicit none
         real(rkind),    intent(in)  :: z (:)
@@ -81,7 +81,7 @@ contains
         
     end function
 
-    function InvChebMatrix(fk, z)
+    function InvChebMatrix(fk,z)
     
         implicit none
         real(rkind),    intent(in)  :: z(:)
@@ -191,7 +191,7 @@ module util_mod
 
 contains
 
-    subroutine assert (cond, msg)
+    subroutine assert (cond,msg)
         implicit none
         logical,          intent(in) :: cond
         character(len=*), intent(in) :: msg
@@ -213,15 +213,15 @@ module nmct_mod
 
 contains
 
-    subroutine ReadEnvParameter(casename,Nw,Nb,cpmax,freq,zs,zr,rmax,dr,hinterface,Hb,&
-        dz,Lowerboundary,tlmin,tlmax,rhow,rhob,alphaw,alphab,cw,cb,data_file)
+    subroutine ReadEnvParameter(casename,Nw,Nb,cpmax,freq,zs,zr,rmax,dr,hinterface,Hb,dz,&
+        Lowerboundary,tlmin,tlmax,rhow,rhob,rhoh,alphaw,alphab,alphah,cw,cb,ch,data_file)
         
         implicit none
         character(len=MAX_FILENAME_LEN), intent(out) :: casename
         character(len=MAX_FILENAME_LEN), intent(in)  :: data_file
+        character(len=1),                intent(out) :: Lowerboundary
         integer,                         intent(out) :: Nw
         integer,                         intent(out) :: Nb
-        integer,                         intent(out) :: Lowerboundary
         real(rkind),                     intent(out) :: cpmax
         real(rkind),                     intent(out) :: dr
         real(rkind),                     intent(out) :: zs
@@ -233,6 +233,7 @@ contains
         real(rkind),                     intent(out) :: dz
         real(rkind),                     intent(out) :: tlmin
         real(rkind),                     intent(out) :: tlmax
+        real(rkind),                     intent(out) :: rhoh,    alphah,    ch        
         real(rkind), allocatable,        intent(out) :: rhow(:), alphaw(:), cw(:)
         real(rkind), allocatable,        intent(out) :: rhob(:), alphab(:), cb(:)
         real(rkind), allocatable, dimension(:)       :: temp_alphaw, depw, temp_rhow, temp_cw
@@ -258,7 +259,7 @@ contains
         read (1, *) tlmax
         read (1, *) n_w
         read (1, *) n_b
-        
+
         !read the param_mod of ocean
         allocate(depw(n_w), temp_cw(n_w), temp_rhow(n_w), temp_alphaw(n_w))
         allocate(depb(n_b), temp_cb(n_b), temp_rhob(n_b), temp_alphab(n_b))
@@ -275,20 +276,26 @@ contains
             call assert(.false., 'interface must less than Hb and greater than 0!')
         end if
         
+        if (Lowerboundary == 'A') then
+                read(1, *) ch, ch, rhoh, alphah    
+        endif
+        
         close(1)
 
         call assert(Nw > 2 .and. Nb > 2, 'Nw and Nb must greater than 2!')
+        
         call assert(depw(1) == 0.0 .and. depw(n_w) == hinterface .and. &
                     depb(1) == hinterface .and. depb(n_b) == Hb, &
-                     'input sound profile is unsuitable!')
+                     'Error! input sound profile is unsuitable !')
                      
         call assert(zs > 0 .and. zs < Hb .and. zr > 0 .and. zr < Hb,&
-                                    'Nw and Nb must greater than 2!')
+                    'zs and zr must be greater than 0 and less than H!')
         
         call assert(rmax / dr == floor(rmax / dr), 'Please reinput the dr and rmax!')
 
-        call assert(Lowerboundary == 0 .or. Lowerboundary == 1, &
-             'The lower boundary must be rigid (0) or soft (1)!' )
+        call assert(Lowerboundary == 'V' .or. Lowerboundary == 'R' &
+               .or. Lowerboundary == 'A', &
+             'Error! The lower boundary must be vaccum, rigid or halfspace!' )
 
         !Interplating to the CGL points
         allocate(cw(Nw+1),cb(Nb+1),rhow(Nw+1),rhob(Nb+1),alphaw(Nw+1),alphab(Nb+1))
@@ -347,7 +354,7 @@ contains
         
     end subroutine
 
-	subroutine Interpolation_SSP(dep, c, dep2, c2)
+	subroutine Interpolation_SSP(dep,c,dep2,c2)
 		implicit none
 		real   (rkind),intent(in) :: dep(:), dep2(:)
 		complex(rkind),intent(in) :: c(:)
@@ -379,8 +386,8 @@ contains
 
 	end subroutine
 
-    subroutine Initialization(Nw,Nb,freq,rmax,dr,zs,rhow,rhob,cw,cb,alphaw,alphab, &
-        hinterface, Hb, nr, r, rhozs, kw, kb)
+    subroutine Initialization(Nw,Nb,freq,rmax,dr,zs,rhow,rhob,cw,cb,ch,alphaw, &
+                              alphab,alphah,hinterface,Hb,nr,r,rhozs,kw,kb,kh)
         implicit none
         integer,                     intent(in)  :: Nw, Nb
         integer,                     intent(out) :: nr
@@ -392,9 +399,11 @@ contains
         real(rkind),                 intent(in)  :: Hb
         real(rkind), dimension(Nw+1),intent(in)  :: rhow, cw, alphaw
         real(rkind), dimension(Nb+1),intent(in)  :: rhob, cb, alphab
+        real(rkind),                 intent(in)  :: ch, alphah
         real(rkind),                 intent(out) :: rhozs
         real(rkind),    allocatable, intent(out) :: r(:)
         complex(rkind), allocatable, intent(out) :: kw(:), kb(:)
+        complex(rkind),              intent(out) :: kh
         real(rkind), dimension(Nw+1)             :: x1, z1
         real(rkind), dimension(Nb+1)             :: x2, z2
         real(rkind)                              :: w
@@ -435,41 +444,51 @@ contains
         allocate (kw(Nw+1), kb(Nb+1))
         kw = w / cw * (1.0_rkind + ci * alphaw / (40.0_rkind * pi * log10(exp(1.0_rkind))))
         kb = w / cb * (1.0_rkind + ci * alphab / (40.0_rkind * pi * log10(exp(1.0_rkind))))
+        kh = w / ch * (1.0_rkind + ci * alphah / (40.0_rkind * pi * log10(exp(1.0_rkind))))
         
     end subroutine
 
-    subroutine EigenValueVector(Nw,Nb,hinterface,Hb,kw,kb,rhow,rhob, &
-        Lowerboundary, kr, eigvectorw, eigvectorb)
+    subroutine EigenValueVector(Nw,Nb,hinterface,Hb,kw,kb,kh,rhow,rhob,rhoh,&
+        alphah,Lowerboundary,kr,eigvectorw,eigvectorb)
         implicit none
-        integer,                     intent(in)    :: Nw, Nb
-        integer,                     intent(in)    :: Lowerboundary
-        real(rkind),                 intent(in)    :: hinterface, Hb
-        real(rkind),                 intent(in)    :: rhow(Nw+1), rhob(Nb+1)
-        complex(rkind),              intent(inout) :: kw(Nw+1), kb(Nb+1)
-        complex(rkind),              intent(out)   :: kr(Nw+Nb-2)
-        complex(rkind),              intent(out)   :: eigvectorw(Nw+1, Nw+Nb-2)
-        complex(rkind),              intent(out)   :: eigvectorb(Nb+1, Nw+Nb-2)
-        real(rkind),    dimension(Nw+1)            :: Pu
-        real(rkind),    dimension(Nb+1)            :: Pd        
-        real(rkind),    dimension(Nw+1, Nw+1)      :: D1
-        real(rkind),    dimension(Nb+1, Nb+1)      :: D2        
-        real(rkind),    dimension(Nw+1)            :: x1
-        real(rkind),    dimension(Nb+1)            :: x2    
-        complex(rkind), dimension(Nw+1, Nw+1)      :: A
-        complex(rkind), dimension(Nb+1, Nb+1)      :: B                
-        complex(rkind)                             :: U(Nw+Nb+2, Nw+Nb+2)
-        complex(rkind)                             :: bottom_boundary(Nb+1)
-        complex(rkind)                             :: L11(Nw+Nb-2, Nw+Nb-2)
-        complex(rkind)                             :: L12(Nw+Nb-2, 4)
-        complex(rkind)                             :: L21(4, Nw+Nb-2)
-        complex(rkind)                             :: L22(4, 4)
-        complex(rkind)                             :: L(Nw+Nb-2, Nw+Nb-2)
-        complex(rkind)                             :: v2(4, Nw+Nb-2)
-        complex(rkind)                             :: VL(Nw+Nb-2)
-        complex(rkind)                             :: VR(Nw+Nb-2, Nw+Nb-2)
-        complex(rkind)                             :: WORK(2*(Nw+Nb-2))
-        real(rkind)                                :: RWORK(2*(Nw+Nb-2))
-        integer                                    :: i, info, j(1), IPIV(4)
+        integer,                     intent(in)     :: Nw, Nb
+        character(len=1),            intent(in)     :: Lowerboundary
+        real(rkind),                 intent(in)     :: hinterface, Hb
+        real(rkind),                 intent(in)     :: rhow(Nw+1), rhob(Nb+1)
+        real(rkind),                 intent(in)     :: rhoh
+        real(rkind),                 intent(in)     :: alphah     
+        complex(rkind),              intent(inout)  :: kw(Nw+1), kb(Nb+1)
+        complex(rkind),              intent(in)     :: kh        
+        complex(rkind),allocatable,  intent(out)    :: kr(:)
+        complex(rkind),allocatable,  intent(out)    :: eigvectorw(:,:)
+        complex(rkind),allocatable,  intent(out)    :: eigvectorb(:,:)
+        real(rkind),    dimension(Nw+1)             :: Pu
+        real(rkind),    dimension(Nb+1)             :: Pd        
+        real(rkind),    dimension(Nw+1, Nw+1)       :: D1
+        real(rkind),    dimension(Nb+1, Nb+1)       :: D2        
+        real(rkind),    dimension(Nw+1)             :: x1
+        real(rkind),    dimension(Nb+1)             :: x2    
+        complex(rkind), dimension(Nw+1, Nw+1)       :: A
+        complex(rkind), dimension(Nb+1, Nb+1)       :: B               
+        complex(rkind), dimension(Nw+Nb+2, Nw+Nb+2) :: U
+        complex(rkind), dimension(Nb+1)             :: Hb_boundary
+                                                    
+        complex(rkind), allocatable, dimension(:,:) :: V, W, E
+        complex(rkind), allocatable, dimension(:,:) :: A_, B_        
+        complex(rkind), allocatable, dimension(:,:) :: L11
+        complex(rkind), allocatable, dimension(:,:) :: L12
+        complex(rkind), allocatable, dimension(:,:) :: L21
+        complex(rkind), allocatable, dimension(:,:) :: L22
+        complex(rkind), allocatable, dimension(:,:) :: L
+        complex(rkind), allocatable, dimension(:,:) :: v2
+        complex(rkind), allocatable, dimension(:,:) :: GEVL, VR        
+        complex(rkind), allocatable, dimension(:)   :: VL
+        complex(rkind), allocatable, dimension(:)   :: WORK
+        real(rkind)   , allocatable, dimension(:)   :: RWORK, IPIV                                                    
+        complex(rkind), allocatable, dimension(:)   :: ALPHA
+        complex(rkind), allocatable, dimension(:)   :: BETA                                                            
+        integer                                     :: j(1), INFO 
+        integer                                     :: i
 
         D1 = DerivationMatrix(Nw+1)
         D2 = DerivationMatrix(Nb+1)
@@ -493,74 +512,161 @@ contains
         B = matmul(B, D2) + Convolution(Cheb(kb, x2))
 
         U = 0.0_rkind
-        U(1:Nw-1, 1:Nw-1)              = A(1:Nw-1, 1:Nw-1)
-        U(1:Nw-1, Nw+Nb-1:Nw+Nb)       = A(1:Nw-1, Nw:Nw+1)
-        U(Nw:Nw+Nb-2, Nw:Nw+Nb-2)      = B(1:Nb-1, 1:Nb-1)
-        U(Nw:Nw+Nb-2, Nw+Nb+1:Nw+Nb+2) = B(1:Nb-1, Nb:Nb+1)
-        !upper boundary
-        U(Nw+Nb-1, 1:Nw-1)        = 1.0_rkind
-        U(Nw+Nb-1, Nw+Nb-1:Nw+Nb) = 1.0_rkind
-        !lower boundary
-        do i = 1, Nb + 1
-            bottom_boundary(i) = (-1.0_rkind) ** (i-1)
-        end do
-        if (Lowerboundary == 1)  bottom_boundary = matmul(bottom_boundary, D2)
-        U(Nw+Nb+2, Nw:Nw+Nb-2)      = bottom_boundary(1 : Nb-1)
-        U(Nw+Nb+2, Nw+Nb+1:Nw+Nb+2) = bottom_boundary(Nb: Nb+1)
-        !interface equal
-        do i = 1, Nw - 1
-        U(Nw+Nb, i) = (-1.0_rkind) ** (i-1)
-        end do
-        U(Nw+Nb, Nw+Nb-1)         = (-1.0_rkind) ** (Nw - 1)
-        U(Nw+Nb, Nw+Nb)           = (-1.0_rkind) ** Nw
-        U(Nw+Nb, Nw:Nw+Nb-2)      =  -1.0_rkind
-        U(Nw+Nb, Nw+Nb+1:Nw+Nb+2) =  -1.0_rkind
-        !interface derivative
+        
+        !for the second interface boundary
         do i = 1, Nw + 1
-        Pu(i) = (-1.0_rkind) ** (i-1)
-        end do
-        Pd =  1.0_rkind
+            Pu(i) = (-1.0_rkind) ** (i-1)
+        end do        
         Pu =  1.0_rkind / rhow(Nw+1) / hinterface * matmul(Pu, D1)
+        Pd =  1.0_rkind
         Pd = -1.0_rkind / rhob(1) / (Hb - hinterface) * matmul(Pd, D2)
-
-        U(Nw+Nb+1, 1:Nw-1)          = Pu(1:Nw-1)
-        U(Nw+Nb+1, Nw:Nw+Nb-2)      = Pd(1:Nb-1)
-        U(Nw+Nb+1, Nw+Nb-1:Nw+Nb)   = Pu(Nw:Nw+1)
-        U(Nw+Nb+1, Nw+Nb+1:Nw+Nb+2) = Pd(Nb:Nb+1)
-
-        L11 = U(1:Nw+Nb-2, 1:Nw+Nb-2)
-        L12 = U(1:Nw+Nb-2, Nw+Nb-1:Nw+Nb+2)
-        L21 = U(Nw+Nb-1:Nw+Nb+2, 1:Nw+Nb-2)
-        L22 = U(Nw+Nb-1:Nw+Nb+2, Nw+Nb-1:Nw+Nb+2)
-
-        call zgesv(4, Nw+Nb-2, L22, 4, IPIV, L21, 4, info)
-        L = L11 - matmul(L12, L21)
-
-        call zgeev('N', 'V', Nw+Nb-2, L, Nw+Nb-2, kr, VL, 1, VR, Nw+Nb-2, WORK, 2*(Nw+Nb-2), RWORK, INFO)
-
-        v2 = -matmul(L21, VR)
-
-        eigvectorw = 0.0_rkind
-        eigvectorb = 0.0_rkind
-        eigvectorw(1:Nw-1,  :) = VR(1:Nw-1,     :)
-        eigvectorw(Nw:Nw+1, :) = v2(1:2,        :)
-        eigvectorb(1:Nb-1,  :) = VR(Nw:Nw+Nb-2, :)
-        eigvectorb(Nb:Nb+1, :) = v2(3:4,        :)
-
-        kr = sqrt(kr)
-        !L and L11 store the sorted eigenvectors respectively. 
-        !VL stores the sorted eigenvalpsi_zs
-        do i = 1, Nw + Nb - 2
-            j = maxloc(real(kr))
-            VL(i) = kr(j(1))
-            L  (1:Nw+1, i) = eigvectorw(:, j(1))
-            L11(1:Nb+1, i) = eigvectorb(:, j(1))
-            kr(j(1)) = - 1.0_rkind
+        !for the lower boundary
+        do i = 1, Nb + 1
+            Hb_boundary(i) = (-1.0_rkind) ** (i-1)
         end do
+       
+        !Which type of lower boundary condition is used? 
+        if (Lowerboundary == 'A') then
+            U(1:Nw+1, 1:Nw+1)             = A
+            U(Nw+2:Nw+Nb+2, Nw+2:Nw+Nb+2) = B
+            allocate(V(Nw+Nb+2,Nw+Nb+2),W(Nw+Nb+2,Nw+Nb+2),E(Nw+Nb+2,Nw+Nb+2))
+            V = 0.0_rkind
+            W = 0.0_rkind
+            E = 0.0_rkind
+            do i = 1, Nw+Nb+2
+                U(i, i) = U(i, i) - kh ** 2
+                W(i, i) = 1.0_rkind
+                E(i, i) = 1.0_rkind
+            enddo
+            !upper boundary
+            U(Nw, 1:Nw+1) = 1.0_rkind
+            W(Nw, Nw)     = 0.0_rkind            
+            !first interface boundary
+            do i = 1, Nw + 1
+                U(Nw+1, i)   = (-1.0_rkind) ** (i - 1)
+            end do
+            U(Nw+1, Nw+2:Nw+Nb+2) = -1.0_rkind
+            W(Nw+1, Nw+1)         =  0.0_rkind            
+            !second interface boundary
+            U(Nw+Nb+1, 1:Nw+1)       = Pu
+            U(Nw+Nb+1, Nw+2:Nw+Nb+2) = Pd
+            W(Nw+Nb+1, Nw+Nb+1)      = 0.0_rkind 
+            !the most important lower boundary 
+            U(Nw+Nb+2, Nw+2:Nw+Nb+2) = 2 * ci * rhoh / rhow(Nw+1) / (hinterface - Hb) * matmul(Hb_boundary, D2)            
+            V(Nw+Nb+2, Nw+2:Nw+Nb+2) = Hb_boundary
+            W(Nw+Nb+2, Nw+Nb+2)      = 0.0_rkind
+ 
+            allocate(A_(2*(Nw+Nb+2),2*(Nw+Nb+2)), B_(2*(Nw+Nb+2),2*(Nw+Nb+2)))
+            A_ = 0.0_rkind
+            B_ = 0.0_rkind
+            A_(1:Nw+Nb+2,       1:   Nw+Nb+2)  = -V
+            A_(1:Nw+Nb+2, Nw+Nb+3:2*(Nw+Nb+2)) = -U
+            A_(Nw+Nb+3:2*(Nw+Nb+2), 1:Nw+Nb+2) =  E
+            B_(1:Nw+Nb+2,           1:Nw+Nb+2) =  W
+            B_(Nw+Nb+3:2*(Nw+Nb+2), Nw+Nb+3:2*(Nw+Nb+2)) = E
+            deallocate(V, W, E)
+            allocate(ALPHA(2*(Nw+Nb+2)), BETA(2*(Nw+Nb+2)), GEVL(2*(Nw+Nb+2),2*(Nw+Nb+2)))
+            allocate(VR(2*(Nw+Nb+2),2*(Nw+Nb+2)), WORK(4*(Nw+Nb+2)), RWORK(16*(Nw+Nb+2)))
+           
+            call zggev('N', 'V', 2*(Nw+Nb+2), A_, 2*(Nw+Nb+2), B_, 2*(Nw+Nb+2),&
+                        ALPHA, BETA, GEVL, 2*(Nw+Nb+2), VR, 2*(Nw+Nb+2), WORK, &
+                        4*(Nw+Nb+2), RWORK, INFO)                       
+            ALPHA = ALPHA / BETA         
+            
+            do i = 1, 2*(Nw+Nb+2)
+                if(imag(ALPHA(i)) > 0 .and. abs(real(ALPHA(i))) <= alphah / (40.0 * pi * log10(exp(1.0)))) then
+                    ALPHA(INFO+1) = sqrt(kh ** 2 - ALPHA(i) ** 2)
+                    VR(:, INFO+1) = VR(:, i)
+                    INFO = INFO + 1
+                endif
+            end do
+                        
+            if(INFO > 1) then
+                allocate(kr(INFO), eigvectorw(Nw+1,INFO), eigvectorb(Nb+1,INFO))
+                ALPHA(INFO+1:2*(Nw+Nb+2)) = -9999.0_rkind
+                !VR temporarily store the sorted eigenvectors respectively. 
+                do i = 1, INFO
+                    j = maxloc(real(ALPHA))
+                    kr(i)       = ALPHA(j(1))
+                    VR(:, i)    = VR(:, j(1))
+                    ALPHA(j(1)) = -9999.0_rkind
+                end do                
 
-        kr = VL
-        eigvectorw = L  (1:Nw+1, :)
-        eigvectorb = L11(1:Nb+1, :)
+                eigvectorw = VR(Nw+Nb+3:2*Nw+Nb+3, 1:INFO)
+                eigvectorb = VR(2*Nw+Nb+4:2*(Nw+Nb+2), 1:INFO)
+            else
+                stop 'Error! No suitable modes!'
+            endif           
+            
+            deallocate(ALPHA, BETA, GEVL, VR, WORK, RWORK)
+            
+        else
+            U(1:Nw-1,       1:Nw-1)        = A(1:Nw-1, 1:Nw-1)
+            U(1:Nw-1, Nw+Nb-1:Nw+Nb)       = A(1:Nw-1, Nw:Nw+1)
+            U(Nw:Nw+Nb-2,  Nw:Nw+Nb-2)     = B(1:Nb-1, 1:Nb-1)
+            U(Nw:Nw+Nb-2, Nw+Nb+1:Nw+Nb+2) = B(1:Nb-1, Nb:Nb+1)
+            !upper boundary
+            U(Nw+Nb-1, 1:Nw-1)        = 1.0_rkind
+            U(Nw+Nb-1, Nw+Nb-1:Nw+Nb) = 1.0_rkind
+            !lower boundary
+            if (Lowerboundary == 'R')  Hb_boundary = matmul(Hb_boundary, D2)
+            U(Nw+Nb+2, Nw:Nw+Nb-2)      = Hb_boundary(1 : Nb-1)
+            U(Nw+Nb+2, Nw+Nb+1:Nw+Nb+2) = Hb_boundary(Nb: Nb+1)
+            !first interface boundary
+            do i = 1, Nw-1
+                U(Nw+Nb, i) = (-1.0_rkind) ** (i - 1)
+            end do
+            U(Nw+Nb, Nw+Nb-1)         = (-1.0_rkind) **(Nw - 1)
+            U(Nw+Nb, Nw+Nb)           = (-1.0_rkind) ** Nw
+            U(Nw+Nb, Nw:Nw+Nb-2)      =  -1.0_rkind
+            U(Nw+Nb, Nw+Nb+1:Nw+Nb+2) =  -1.0_rkind
+            !second interface boundary
+            U(Nw+Nb+1,  1:Nw-1)         = Pu(1 :Nw-1)
+            U(Nw+Nb+1, Nw:Nw+Nb-2)      = Pd(1 :Nb-1)
+            U(Nw+Nb+1, Nw+Nb-1:Nw+Nb)   = Pu(Nw:Nw+1)
+            U(Nw+Nb+1, Nw+Nb+1:Nw+Nb+2) = Pd(Nb:Nb+1)
+
+            allocate(L11(Nw+Nb-2,Nw+Nb-2), L12(Nw+Nb-2,4), L21(4,Nw+Nb-2),&
+                     L22(4,4), L(Nw+Nb-2,Nw+Nb-2), v2(4, Nw+Nb-2), IPIV(4)) 
+                                        
+            L11 = U(1:Nw+Nb-2, 1:Nw+Nb-2)
+            L12 = U(1:Nw+Nb-2, Nw+Nb-1:Nw+Nb+2)
+            L21 = U(Nw+Nb-1:Nw+Nb+2, 1:Nw+Nb-2)
+            L22 = U(Nw+Nb-1:Nw+Nb+2, Nw+Nb-1:Nw+Nb+2)
+
+            allocate(kr(Nw+Nb-2), eigvectorw(Nw+1,Nw+Nb-2), eigvectorb(Nb+1,Nw+Nb-2))
+
+            call zgesv(4, Nw+Nb-2, L22, 4, IPIV, L21, 4, INFO)
+            L = L11 - matmul(L12, L21)
+            
+            allocate(VL(Nw+Nb-2), VR(Nw+Nb-2, Nw+Nb-2), WORK(2*(Nw+Nb-2)), RWORK(2*(Nw+Nb-2)))
+            call zgeev('N', 'V', Nw+Nb-2, L, Nw+Nb-2, kr, VL, 1, VR, Nw+Nb-2, WORK, 2*(Nw+Nb-2), RWORK, INFO)
+
+            v2 = -matmul(L21, VR)
+            kr = sqrt(kr)  
+            eigvectorw = 0.0_rkind
+            eigvectorb = 0.0_rkind
+            eigvectorw(1:Nw-1,  :) = VR(1:Nw-1,     :)
+            eigvectorw(Nw:Nw+1, :) = v2(1:2,        :)
+            eigvectorb(1:Nb-1,  :) = VR(Nw:Nw+Nb-2, :)
+            eigvectorb(Nb:Nb+1, :) = v2(3:4,        :) 
+            
+            !L and L11 temporarily store the sorted eigenvectors respectively. 
+            !VL temporarily stores the sorted eigenvalues
+            do i = 1, Nw+Nb-2
+                j = maxloc(real(kr))
+                VL(i) = kr(j(1))
+                L  (1:Nw+1, i) = eigvectorw(:, j(1))
+                L11(1:Nb+1, i) = eigvectorb(:, j(1))
+                kr(j(1)) = -9999.0_rkind
+            end do
+
+            kr = VL
+            eigvectorw = L  (1:Nw+1, :)
+            eigvectorb = L11(1:Nb+1, :)            
+
+            deallocate(L11, L12, L21, L22, L, v2, IPIV)           
+        endif
 
     end subroutine
 
@@ -688,6 +794,7 @@ contains
 
         do i = 1, nmodes
             Co1 = Convolution(eigvectorw(:, i))
+
             f1  = matmul(Co11, matmul(Co1, eigvectorw(:, i)))
 
             Co2 = Convolution(eigvectorb(:, i))

@@ -1,13 +1,13 @@
 function [psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
-                                        zs, rhow, rhob, interface, bottom)
+                                        zs, rhow, rhob, interface, Hb)
 
     zt1  = 0 : dz : interface;
-    zt2  = interface : dz : bottom;
-    z    = 0 : dz : bottom;
+    zt2  = interface : dz : Hb;
+    z    = 0 : dz : Hb;
 
     xt1  = -2 / interface * zt1 + 1;
-    xt2  = -2 / (bottom - interface) * zt2 + ...
-           (bottom + interface) / (bottom - interface);
+    xt2  = -2 / (Hb - interface) * zt2 + ...
+           (Hb + interface) / (Hb - interface);
 
     psi1 = InvChebTrans(eigvectorw, xt1);
     psi2 = InvChebTrans(eigvectorb, xt2);
@@ -21,7 +21,7 @@ function [psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
     end
 
     norm = Normalization(eigvectorw, eigvectorb, ...
-                 nmodes, rhow, rhob, interface, bottom);
+                 nmodes, rhow, rhob, interface, Hb);
 
     psi   = psi * diag(1 ./ norm);
     psizs = interp1(z, psi, zs, 'linear');
