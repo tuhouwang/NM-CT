@@ -103,7 +103,7 @@ program NMCT
     
     call SynthesizeSoundField(nmodes,nr,r,kr,rhozs,zs,dz,psi,tl)        
         
-    call SaveSoundField(filename,tlmin,tlmax,r,z,tl)
+    call SaveSoundField(filename,casename,tlmin,tlmax,r,z,tl)
     
     deallocate(rhow,rhob,alphaw,alphab,cw,cb,r,kw,kb,kr,eigvectorw,eigvectorb,psi,z,tl)    
 

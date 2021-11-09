@@ -242,7 +242,7 @@ contains
                                         
         open(unit=1, status='unknown', file=data_file) 
     
-        read (1, *) casename
+        read (1, '(A200)') casename
         read (1, *) Nw
         read (1, *) Nb
         read (1, *) cpmax
@@ -494,7 +494,7 @@ contains
         D2 = DerivationMatrix(Nb+1)
 
         do i = 1, Nw + 1
-            x1(i) = cos( (i-1) * pi / Nw )
+            x1(i) = cos((i - 1) * pi / Nw)
             kw(i) = kw(i) ** 2            
         end do
 
@@ -503,11 +503,11 @@ contains
             kb(i) = kb(i) ** 2        
         end do
 
-        A = 4.0_rkind / hinterface **2 * matmul(Convolution(Cheb(rhow, x1)), D1)
+        A = 4.0_rkind / hinterface ** 2 * matmul(Convolution(Cheb(rhow, x1)), D1)
         A = matmul(A, Convolution(Cheb(1.0_rkind / rhow, x1)))
         A = matmul(A, D1) + Convolution(Cheb(kw, x1))
 
-        B = 4.0_rkind / (Hb - hinterface) **2 * matmul(Convolution(Cheb(rhob, x2)), D2)
+        B = 4.0_rkind / (Hb - hinterface) ** 2 * matmul(Convolution(Cheb(rhob, x2)), D2)
         B = matmul(B, Convolution(Cheb(1.0_rkind / rhob, x2)))
         B = matmul(B, D2) + Convolution(Cheb(kb, x2))
 
@@ -515,14 +515,14 @@ contains
         
         !for the second interface boundary
         do i = 1, Nw + 1
-            Pu(i) = (-1.0_rkind) ** (i-1)
+            Pu(i) = (-1.0_rkind) ** (i - 1)
         end do        
         Pu =  1.0_rkind / rhow(Nw+1) / hinterface * matmul(Pu, D1)
         Pd =  1.0_rkind
         Pd = -1.0_rkind / rhob(1) / (Hb - hinterface) * matmul(Pd, D2)
         !for the lower boundary
         do i = 1, Nb + 1
-            Hb_boundary(i) = (-1.0_rkind) ** (i-1)
+            Hb_boundary(i) = (-1.0_rkind) ** (i - 1)
         end do
        
         !Which type of lower boundary condition is used? 
@@ -637,6 +637,7 @@ contains
             allocate(kr(Nw+Nb-2), eigvectorw(Nw+1,Nw+Nb-2), eigvectorb(Nb+1,Nw+Nb-2))
 
             call zgesv(4, Nw+Nb-2, L22, 4, IPIV, L21, 4, INFO)
+            
             L = L11 - matmul(L12, L21)
             
             allocate(VL(Nw+Nb-2), VR(Nw+Nb-2, Nw+Nb-2), WORK(2*(Nw+Nb-2)), RWORK(2*(Nw+Nb-2)))
@@ -847,16 +848,17 @@ contains
         
     end subroutine
 
-    subroutine SaveSoundField(filename,tlmin,tlmax,r,z,tl)
+    subroutine SaveSoundField(filename,casename,tlmin,tlmax,r,z,tl)
 
         implicit none
         character(len=MAX_FILENAME_LEN), intent(in) :: filename
+        character(len=MAX_FILENAME_LEN), intent(in) :: casename
         real(rkind),                     intent(in) :: tlmin, tlmax
         real(rkind), dimension(:),       intent(in) :: r, z
         real(rkind), dimension(:, :),    intent(in) :: tl
 
         open(unit=20, status='unknown', file=filename, access='stream', form='unformatted')
-        write(20)  size(z), size(r), tlmin, tlmax, z, r, tl
+        write(20)  casename, size(z), size(r), tlmin, tlmax, z, r, tl
         close(20)
         
     end subroutine

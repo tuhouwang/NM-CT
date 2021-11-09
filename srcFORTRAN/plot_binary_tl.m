@@ -11,7 +11,8 @@
 clc
 clear
 fid=fopen('tl.bin','rb');
- 
+MAX_FILENAME_LEN = 200;
+casename = fread(fid,MAX_FILENAME_LEN,'char'); 
 nz=fread(fid,1,'int32');
 nr=fread(fid,1,'int32');  
 tlmin=fread(fid,1,'double');
@@ -20,9 +21,16 @@ z = fread(fid, [nz, 1], 'double');
 r = fread(fid, [1, nr], 'double');
 tl= fread(fid, [nz, nr],'double');
 
+for k = 1 : MAX_FILENAME_LEN - 1
+    if(casename(k) == 32 && casename(k + 1) == 32)
+        break;
+    end
+end
+casename = char(casename(1:k-1)');
+
 fclose(fid);
 figure;
-pcolor(r, z, tl ); view( 0, -90 );
+pcolor(r, z, tl ); view( 0, -90 ); title(casename);
 caxis( [ tlmin tlmax ] ); colormap( flipud(jet) );
 shading flat; colorbar( 'YDir', 'Reverse' ); 
 xlabel( 'Range (m)' ); ylabel( 'Depth (m)' );
