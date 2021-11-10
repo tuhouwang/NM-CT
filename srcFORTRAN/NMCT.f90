@@ -21,7 +21,7 @@
 ! of Sound and Vibration, https://doi.org/10.1016/j.jsv.2020.115784) under|
 ! the supervision of Prof. Yongxian Wang, National University of Defense  |
 ! Technology, China.                                                      |
-!																		  |
+!                                                                         |
 ! This Matlab/Scilab style code computes the layered and range-independent|
 ! modal acoustic field using the Chebyshev-Tau spectral method based on   |
 ! the normal modes.                                                       |
@@ -49,7 +49,7 @@ program NMCT
     
     external zgeev
     external zggev    
-	external zgesv
+    external zgesv
 
     !---------------------------------------------------------------------------------
     ! Declare the variable needed later.

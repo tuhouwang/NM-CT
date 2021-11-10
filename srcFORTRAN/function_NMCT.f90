@@ -26,11 +26,11 @@ module cheb_mod
 contains
 
     function ChebReal(fx,z)
-	
+
         implicit none
-        real(rkind),	intent(in)  :: z (:)
-        real(rkind),    intent(in)  :: fx(:)		
-		real(rkind)		            :: ChebReal(size(z))
+        real(rkind),    intent(in)  :: z (:)
+        real(rkind),    intent(in)  :: fx(:)   
+        real(rkind)                 :: ChebReal(size(z))
         real(rkind)                 :: fx2(size(z))
         real(rkind)                 :: T(size(z),size(z)) 
         integer                     :: m, i
@@ -57,7 +57,7 @@ contains
     
         implicit none
         real(rkind),    intent(in)  :: z (:)
-        complex(rkind), intent(in)  :: fx(:)        
+        complex(rkind), intent(in)  :: fx(:)   
         complex(rkind)              :: ChebComplex(size(z))
         complex(rkind)              :: fx2(size(z))
         real(rkind)                 :: T(size(z),size(z)) 
@@ -133,11 +133,11 @@ contains
         do  k = 1, n
              j = k-i+1
              if (1 <= j .and. j <= n) then
-                ConvolutionReal(k,i) = ConvolutionReal(k,i) + v(j) 
+                ConvolutionReal(k,i) = ConvolutionReal(k,i) + v(j)
              endif
              j = i-k+1
              if (j <=n .and. j >= 1) then
-                ConvolutionReal(k,i) = ConvolutionReal(k,i) + v(j) 
+                ConvolutionReal(k,i) = ConvolutionReal(k,i) + v(j)
              endif
              if (k > 1) then 
                 j = i+k-1   
@@ -165,11 +165,11 @@ contains
         do  k = 1, n
              j = k-i+1
              if (1 <= j .and. j <= n) then
-                ConvolutionComplex(k,i) = ConvolutionComplex(k,i) + v(j) 
+                ConvolutionComplex(k,i) = ConvolutionComplex(k,i) + v(j)
              endif
              j = i-k+1
              if (j <=n .and. j >= 1) then
-                ConvolutionComplex(k,i) = ConvolutionComplex(k,i) + v(j) 
+                ConvolutionComplex(k,i) = ConvolutionComplex(k,i) + v(j)
              endif
              if (k > 1) then 
                 j = i+k-1   
@@ -354,37 +354,37 @@ contains
         
     end subroutine
 
-	subroutine Interpolation_SSP(dep,c,dep2,c2)
-		implicit none
-		real   (rkind),intent(in) :: dep(:), dep2(:)
-		complex(rkind),intent(in) :: c(:)
-		complex(rkind),intent(out):: c2(:)
-		integer		              :: n_b, n_b2
-		integer		              :: i, j
-		n_b  = size(dep)
-		n_b2 = size(dep2)
-		
-		call assert(n_b  == size(c) ,  'The dimensions of the interpolation array do not match!') 
-		call assert(n_b2 == size(c2),  'The dimensions of the interpolation array do not match!') 
-			
-        do i = 1, n_b2	
+    subroutine Interpolation_SSP(dep,c,dep2,c2)
+        implicit none
+        real   (rkind),intent(in)  :: dep(:), dep2(:)
+        complex(rkind),intent(in)  :: c(:)
+        complex(rkind),intent(out) :: c2(:)
+        integer                    :: n_b, n_b2
+        integer                    :: i, j
+        n_b  = size(dep)
+        n_b2 = size(dep2)
+        
+        call assert(n_b  == size(c) ,  'The dimensions of the interpolation array do not match!') 
+        call assert(n_b2 == size(c2),  'The dimensions of the interpolation array do not match!') 
+            
+        do i = 1, n_b2
             do j = 1, n_b-1
                 if((dep2(i) >= dep(j)) .and. (dep2(i) <= dep(j+1))) then
                     c2(i) = (dep2(i) - dep(j)) / (dep(j+1) - dep(j)) * c(j+1)&
                             +(dep(j+1)-dep2(i))/ (dep(j+1) - dep(j)) * c(j)
-                endif				
+                endif
             enddo 
             
-			if(dep2(i) > dep(n_b)) then
-				c2(i) = c(n_b)					
-			end if
+            if(dep2(i) > dep(n_b)) then
+                c2(i) = c(n_b)               
+            end if
             
-			if(dep2(i) < dep(1)) then
-				c2(i) = c(1)				
-			endif
-        enddo	
+            if(dep2(i) < dep(1)) then
+                c2(i) = c(1)           
+            endif
+        enddo    
 
-	end subroutine
+    end subroutine
 
     subroutine Initialization(Nw,Nb,freq,rmax,dr,zs,rhow,rhob,cw,cb,ch,alphaw, &
                               alphab,alphah,hinterface,Hb,nr,r,rhozs,kw,kb,kh)
@@ -700,58 +700,45 @@ contains
         implicit none
         integer,                         intent(in)  :: nmodes
         real(rkind),                     intent(in)  :: dz
-        real(rkind),    allocatable,     intent(out) :: z(:)	
-        real(rkind),                     intent(in)  :: hinterface, Hb		
-        complex(rkind), dimension(:, :), intent(in)  :: eigvectorw, eigvectorb		
+        real(rkind),    allocatable,     intent(out) :: z(:)    
+        real(rkind),                     intent(in)  :: hinterface, Hb        
+        complex(rkind), dimension(:, :), intent(in)  :: eigvectorw, eigvectorb        
         complex(rkind), allocatable,     intent(out) :: psi(:, :)
         real(rkind),    allocatable, dimension(:)    :: xt1, xt2, zt1, zt2, zt3
         complex(rkind), allocatable, dimension(:, :) :: psi1, psi2, psit
         integer                                      :: i
 
-        allocate (zt1(nint(hinterface / dz) + 1))
-        allocate (zt2(nint((Hb - hinterface) / dz) + 1))
-        allocate (z  (nint(Hb / dz) + 1) )
+        allocate (zt1(ceiling(hinterface / dz)))
+        allocate (zt2(ceiling((Hb - hinterface) / dz)))
+        allocate (z  (ceiling(Hb / dz) + 1) )
 
-        do i = 1, nint(hinterface / dz) + 1
-            zt1(i) = (i-1) * dz
+        do i = 1, ceiling(hinterface / dz)
+            zt1(i) = (i - 1) * dz
         end do
-        do i = 1, nint((Hb - hinterface) / dz) + 1
+        do i = 1, ceiling((Hb - hinterface) / dz)
             zt2(i) = hinterface + (i - 1) * dz
         end do
-        do i = 1, nint(Hb / dz) + 1
+        do i = 1, ceiling(Hb / dz)
             z(i) = (i - 1) * dz
         end do
+        z(ceiling(Hb / dz) + 1) = Hb
 
         xt1 = -2.0_rkind / hinterface * zt1 + 1.0_rkind
         xt2 = -2.0_rkind / (Hb - hinterface) * zt2 + (Hb + hinterface) / (Hb - hinterface)
 
-		!为了保证数值稳定性
-		xt1(1) = 1.0_rkind
-		xt2(1) = 1.0_rkind
-		xt1(size(xt1)) = -1.0_rkind
-		xt2(size(xt2)) = -1.0_rkind
-
         allocate(psi1(size(xt1), nmodes), psi2(size(xt2), nmodes), psi(size(z), nmodes))
         psi1 = InvChebMatrix(eigvectorw(:, 1:nmodes), xt1)
-        psi2 = InvChebMatrix(eigvectorb(:, 1:nmodes), xt2)	
-			
-		if(zt1(size(zt1)) /= zt2(1)) then
-			allocate(zt3(size(zt1)+size(zt2)),psit(size(zt1)+size(zt2),nmodes))
-			zt3(1:size(zt1)) = zt1
-			zt3(size(zt1)+1:size(zt1)+size(zt2)) = zt2
-			psit(1:size(zt1),:) = psi1
-			psit(size(zt1)+1:size(zt1)+size(zt2),:) = psi2
-		else
-			allocate(zt3(size(zt1)+size(zt2)-1),psit(size(zt1)+size(zt2)-1,nmodes))
-			zt3(1:size(zt1)) = zt1
-			zt3(size(zt1):size(zt1)+size(zt2)-1) = zt2
-			psit(1:size(zt1),:)= psi1
-			psit(size(zt1):size(zt1)+size(zt2)-1,:) = psi2			
-		endif	
-		
-		do i =1, nmodes
-			call Interpolation_SSP(zt3,psit(:,i),z,psi(:,i))
-		end do
+        psi2 = InvChebMatrix(eigvectorb(:, 1:nmodes), xt2)    
+            
+        allocate(zt3(size(zt1)+size(zt2)),psit(size(zt1)+size(zt2),nmodes))
+        zt3(1:size(zt1)) = zt1
+        zt3(size(zt1)+1:size(zt1)+size(zt2)) = zt2
+        psit(1:size(zt1),:) = psi1
+        psit(size(zt1)+1:size(zt1)+size(zt2),:) = psi2    
+        
+        do i =1, nmodes
+            call Interpolation_SSP(zt3,psit(:,i),z,psi(:,i))
+        end do
 
         deallocate(psi1, psi2, psit, xt1, xt2, zt1, zt2, zt3)
 
