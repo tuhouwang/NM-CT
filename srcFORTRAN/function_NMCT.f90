@@ -575,20 +575,21 @@ contains
             
             do i = 1, 2*(Nw+Nb+2)
                 if(imag(ALPHA(i)) > 0 .and. abs(real(ALPHA(i))) <= alphah / (40.0 * pi * log10(exp(1.0)))) then
-                    ALPHA(INFO+1) = sqrt(kh ** 2 - ALPHA(i) ** 2)
-                    VR(:, INFO+1) = VR(:, i)
-                    INFO = INFO + 1
+                    ALPHA(  INFO+1) = sqrt(kh ** 2 - ALPHA(i) ** 2)
+                    !GEVL temporarily stores the right eigenvectors 
+                    GEVL(:, INFO+1) = VR(:, i)
+                    INFO =  INFO+1
                 endif
             end do
                         
             if(INFO > 1) then
                 allocate(kr(INFO), eigvectorw(Nw+1,INFO), eigvectorb(Nb+1,INFO))
                 ALPHA(INFO+1:2*(Nw+Nb+2)) = -9999.0_rkind
-                !VR temporarily store the sorted eigenvectors respectively. 
+                !VR temporarily stores the sorted eigenvectors 
                 do i = 1, INFO
                     j = maxloc(real(ALPHA))
                     kr(i)       = ALPHA(j(1))
-                    VR(:, i)    = VR(:, j(1))
+                    VR(:, i)    = GEVL(:, j(1))
                     ALPHA(j(1)) = -9999.0_rkind
                 end do                
 
