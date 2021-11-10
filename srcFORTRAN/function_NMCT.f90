@@ -653,7 +653,7 @@ contains
             eigvectorb(1:Nb-1,  :) = VR(Nw:Nw+Nb-2, :)
             eigvectorb(Nb:Nb+1, :) = v2(3:4,        :) 
             
-            !L and L11 temporarily store the sorted eigenvectors respectively. 
+            !L and L11 temporarily store the sorted eigenvectors respectively 
             !VL temporarily stores the sorted eigenvalues
             do i = 1, Nw+Nb-2
                 j = maxloc(real(kr))
@@ -712,16 +712,16 @@ contains
         allocate (zt2(ceiling((Hb - hinterface) / dz)))
         allocate (z  (ceiling(Hb / dz) + 1) )
 
-        do i = 1, ceiling(hinterface / dz)
+        do i = 1, size(zt1)
             zt1(i) = (i - 1) * dz
         end do
-        do i = 1, ceiling((Hb - hinterface) / dz)
+        do i = 1, size(zt2)
             zt2(i) = hinterface + (i - 1) * dz
         end do
-        do i = 1, ceiling(Hb / dz)
+        do i = 1, size(z) - 1
             z(i) = (i - 1) * dz
         end do
-        z(ceiling(Hb / dz) + 1) = Hb
+        z(size(z)) = Hb
 
         xt1 = -2.0_rkind / hinterface * zt1 + 1.0_rkind
         xt2 = -2.0_rkind / (Hb - hinterface) * zt2 + (Hb + hinterface) / (Hb - hinterface)
