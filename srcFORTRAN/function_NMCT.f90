@@ -254,7 +254,6 @@ contains
         read (1, *) hinterface
         read (1, *) Hb
         read (1, *) dz
-        read (1, *) Lowerboundary
         read (1, *) tlmin
         read (1, *) tlmax
         read (1, *) n_w
@@ -276,8 +275,14 @@ contains
             call assert(.false., 'interface must less than Hb and greater than 0!')
         end if
         
+        read (1, *) Lowerboundary
+        
+        call assert(Lowerboundary == 'V' .or. Lowerboundary == 'R' &
+               .or. Lowerboundary == 'A', &
+             'Error! The lower boundary must be vaccum, rigid or halfspace!') 
+             
         if (Lowerboundary == 'A') then
-                read(1, *) ch, ch, rhoh, alphah    
+                read(1, *) ch, rhoh, alphah    
         endif
         
         close(1)
@@ -292,10 +297,6 @@ contains
                     'zs and zr must be greater than 0 and less than H!')
         
         call assert(rmax / dr == floor(rmax / dr), 'Please reinput the dr and rmax!')
-
-        call assert(Lowerboundary == 'V' .or. Lowerboundary == 'R' &
-               .or. Lowerboundary == 'A', &
-             'Error! The lower boundary must be vaccum, rigid or halfspace!' )
 
         !Interplating to the CGL points
         allocate(cw(Nw+1),cb(Nb+1),rhow(Nw+1),rhob(Nb+1),alphaw(Nw+1),alphab(Nb+1))

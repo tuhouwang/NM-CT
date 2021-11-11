@@ -15,7 +15,6 @@ function [casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, interface, ...
     interface     = fscanf(fid, '%f', 1);
     Hb            = fscanf(fid, '%f', 1);
     dz            = fscanf(fid, '%f', 1);
-    Lowerboundary = fscanf(fid, '%s', 1);
     tlmin         = fscanf(fid, '%f', 1);
     tlmax         = fscanf(fid, '%f', 1);
     nw            = fscanf(fid, '%d', 1);
@@ -36,16 +35,18 @@ function [casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, interface, ...
         error('Error! h must greater than 0 and less than H!');
     end
     
+    Lowerboundary = fscanf(fid, '%s', 1);
+    
     if (Lowerboundary ~= 'V' && Lowerboundary ~= 'R' && Lowerboundary ~= 'A')
         disp('Error! The lower boundary must be vaccum, rigid or halfspace!');
         error('Please input 0 or 1 in Lowerboundary!');
     end
     
     if (Lowerboundary == 'A')
-        halfspace = fscanf(fid, '%f', 4);
-        ch     = halfspace(2);
-        rhoh   = halfspace(3);
-        alphah = halfspace(4);
+        halfspace = fscanf(fid, '%f', 3);
+        ch     = halfspace(1);
+        rhoh   = halfspace(2);
+        alphah = halfspace(3);
     else
         ch     = 0.0;
         rhoh   = 0.0;
