@@ -11,9 +11,7 @@ same input file "`input.txt`", '`ReadEnvParameter`' function/subroutine is used
 to read "`input.txt`" file. User can make changes to "`input.txt`" for the
 desired calculation. It is worth mentioning that the Fortran version of
 the program calls the subroutine '`zgeev()`' in the Lapack (a numerical
-library) to solve the eigenvalues of the complex matrix, so the user
-needs to install the Lapack on the computer when running `NM_CT.f90`, and
-may need to make simple modifications to the Makefile. Both the Matlab
+library) to solve the eigenvalues of the complex matrix. Both the Matlab
 and Fortran versions of the program will eventually generate the same
 format of the binary sound field file "`tl.bin`", and the
 `plot_binary_tl.m` program can be used to read the sound field binary
