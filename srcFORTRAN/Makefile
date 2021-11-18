@@ -1,19 +1,12 @@
 .PHONY: clean all
 
-FC = gfortran
-
-OBJS = function_NMCT.o NMCT.o complex_bessel.o
-
-target = NMCT.exe
-
-$(target): $(OBJS)
-	$(FC) $(OBJS) liblapack.a librefblas.a -o $@
-
-%.o: %.f90
-	$(FC) -c $< -o $@
-	
-complex_bessel.o: complex_bessel.f
-	$(FC) -c $< -o $@
+all:
+	(cd lapack-3.10.0;	make)
+	(cd srcNMCT;        make)
     
 clean:
-	-rm -rf *.o *.mod NMCT.exe tl.bin
+	-rm -rf *.exe tl.bin
+
+cleanall:
+	(cd lapack-3.10.0;	make clean)
+	(cd srcNMCT;	    make clean)  
