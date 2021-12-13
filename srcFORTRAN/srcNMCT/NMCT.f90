@@ -99,7 +99,8 @@ program NMCT
     
     call GenerateModes(nmodes,dz,hinterface,Hb,eigvectorw,eigvectorb,psi,z)
    
-    call Normalization(eigvectorw,eigvectorb,rhow,rhob,hinterface,Hb,Nw,Nb,nmodes,psi)
+    call Normalization(eigvectorw,eigvectorb,rhow,rhob,rhoh,kr,kh,Lowerboundary,&
+                       hinterface,Hb,Nw,Nb,nmodes,psi)
     
     call SynthesizeSoundField(nmodes,nr,r,kr,rhozs,zs,dz,psi,tl)        
         

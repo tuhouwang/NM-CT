@@ -43,7 +43,7 @@
 %--------------------------------------------------------------------------
 % edit 'input.txt';
 clear;
-close all;
+% close all;
 clc;
 tic;
 
@@ -64,7 +64,7 @@ tic;
     eigvectorw, eigvectorb, cpmax);
 
 [psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
-    zs, rhow, rhob, interface, Hb);
+         zs, rhow, rhob, rhoh, kr, kh, Lowerboundary, interface, Hb);
 
 [tl, tl_zr] = SynthesizeSoundField(r, z, kr, rhozs, psizs, psi, zr);
 

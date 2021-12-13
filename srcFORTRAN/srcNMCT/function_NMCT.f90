@@ -745,16 +745,21 @@ contains
 
     end subroutine
 
-    subroutine Normalization(eigvectorw,eigvectorb,rhow,rhob,hinterface,Hb,Nw,Nb,nmodes,psi)
+    subroutine Normalization(eigvectorw,eigvectorb,rhow,rhob,rhoh,kr,kh,Lowerboundary,&
+                             hinterface,Hb,Nw,Nb,nmodes,psi)
 
         implicit none
+        character(len=1),                intent(in)  :: Lowerboundary
         complex(rkind), dimension(:, :), intent(in)  :: eigvectorw, eigvectorb
         integer,                         intent(in)  :: Nw, Nb
         integer,                         intent(in)  :: nmodes
+        real(rkind),                     intent(in)  :: rhoh
         real(rkind),                     intent(in)  :: hinterface, Hb
         complex(rkind), dimension(:, :), intent(out) :: psi        
         real(rkind),                     intent(out) :: rhow(Nw+1)        
-        real(rkind),                     intent(out) :: rhob(Nb+1)    
+        real(rkind),                     intent(out) :: rhob(Nb+1)
+        complex(rkind),                  intent(in)  :: kh
+        complex(rkind),                  intent(in)  :: kr(nmodes)         
         real(rkind)                                  :: x1(Nw+1), P(Nw+1)
         real(rkind)                                  :: x2(Nb+1), Q(Nb+1)        
         real(rkind)                                  :: Co11(Nw+1, Nw+1), Co22(Nb+1, Nb+1)    
@@ -790,10 +795,14 @@ contains
             Co2 = Convolution(eigvectorb(:, i))
             f2  = matmul(Co22, matmul(Co2, eigvectorb(:, i)))
 
-            norm = sqrt(dot_product(P, f1) * hinterface * 0.5_rkind + &
-                        dot_product(Q, f2) * (Hb - hinterface) * 0.5_rkind)
+            norm = dot_product(P, f1) * hinterface * 0.5_rkind + &
+                   dot_product(Q, f2) * (Hb - hinterface) * 0.5_rkind
+                   
+            if(Lowerboundary == 'A') then
+                norm = norm + 0.5_rkind / rhoh * psi(size(psi, 1), i) ** 2  / sqrt(kr(i) ** 2 - kh ** 2)
+            end if
 
-            psi(:, i) = psi(:, i) / norm
+            psi(:, i) = psi(:, i) / sqrt(norm)
         end do
 
     end subroutine

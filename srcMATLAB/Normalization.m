@@ -22,7 +22,7 @@ function a = Normalization(eigvectorw, eigvectorb, nmodes, ...
         f2(:, j) = ConvolutionMatrix(eigvectorb(:, j)) * eigvectorb(:, j);
     end
     
-    a = sqrt( P1 * Rw * f1 * interface / 2 + ...
-        P2 * Rb * f2 * (Hb - interface) / 2 );
+    a = P1 * Rw * f1 * interface / 2 + ...
+        P2 * Rb * f2 * (Hb - interface) / 2;
 
 end
