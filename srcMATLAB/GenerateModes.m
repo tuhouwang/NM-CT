@@ -1,5 +1,5 @@
 function [psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
-                  zs, rhow, rhob, rhoh, kr, kh, Lowerboundary, interface, Hb)
+                  zs, rhow, rhob, interface, Hb)
 
     zt1  = 0 : dz : interface;
     zt2  = interface : dz : Hb;
@@ -22,10 +22,6 @@ function [psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
 
     norm = Normalization(eigvectorw, eigvectorb, ...
                  nmodes, rhow, rhob, interface, Hb);
-             
-    if(Lowerboundary == 'A')
-        norm = norm + 0.5 ./ rhoh * psi(end, :) .^ 2  ./ sqrt(kr .^ 2 - kh ^ 2).';
-    end
 
     psi   = psi * diag( sqrt(1 ./ norm) );
     psizs = interp1(z, psi, zs, 'linear');
