@@ -799,7 +799,7 @@ contains
                    dot_product(Q, f2) * (Hb - hinterface) * 0.5_rkind
 
             if(Lowerboundary == 'A') then
-                norm = norm + 0.5_rkind / rhoh * psi(size(psi, 1), i) ** 2  / sqrt(kr(i) ** 2 - kh ** 2)
+                norm = norm + 0.5_rkind / rhoh * psi(size(psi, 1), i) ** 2  / sqrt(kh ** 2 - kr(i) ** 2)
             end if
 
             psi(:, i) = psi(:, i) / sqrt(norm)
