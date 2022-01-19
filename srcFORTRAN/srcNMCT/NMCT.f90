@@ -92,8 +92,8 @@ program NMCT
     call Initialization(Nw,Nb,freq,rmax,dr,zs,rhow,rhob,cw,cb,ch,alphaw,&
                     alphab,alphah,hinterface,Hb,nr,r,rhozs,kw,kb,kh)
 
-    call EigenValueVector(Nw,Nb,hinterface,Hb,kw,kb,kh,rhow,rhob,rhoh,&
-                    alphah,Lowerboundary,kr,eigvectorw,eigvectorb)
+    call EigenValueVector(Nw,Nb,hinterface,Hb,kw,kb,kh,rhow,rhob,&
+                    rhoh,Lowerboundary,kr,eigvectorw,eigvectorb)
 
     call NumofModes(freq,kr,nmodes,cpmax)
     

@@ -1,5 +1,5 @@
 function [kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, ...
-                interface, Hb, kw, kb, kh, rhow, rhob, rhoh, alphah, Lowerboundary)
+                interface, Hb, kw, kb, kh, rhow, rhob, rhoh, Lowerboundary)
 
     D1  = DerivationMatrix(Nw + 1);
     D2  = DerivationMatrix(Nb + 1);
@@ -44,14 +44,21 @@ function [kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, ...
        W(end, end)      = 0.0; 
        
        [eigvector, kz] = polyeig(U, V, W);
-       ind = find(imag(kz) > 0 & abs(real(kz)) <= alphah / (40.0 * pi * log10(exp(1.0))));
-       kz  = kz(ind);
-       eigvector = eigvector(:,ind);
        
-       kr         = sqrt(kh ^ 2 - kz .^ 2);      
+       ind = find(isnan(real(kz))==0 & isnan(imag(kz))==0 & ...
+                  isinf(real(kz))==0 & isinf(imag(kz))==0 & ...
+                  real(kz) >= 0);
+       kz  = kz(ind); 
+       eigvector  = eigvector(:,ind); 
+       
+       kr  = sqrt(kh ^ 2 - kz .^ 2);           
+       ind = find(real(kr) < max([real(kw);real(kb);real(kh)]));
+       kr  = kr(ind);   
+       
+       eigvector  = eigvector(:,ind);     
        eigvectorw = eigvector(1:Nw+1, :);
        eigvectorb = eigvector(Nw+2:end, :);
-       
+
    else
        
        U(1 :Nw-1,    1      :Nw-1)    = A(1:Nw-1, 1 :Nw-1);
@@ -100,7 +107,6 @@ function [kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, ...
     
    [~, ind] = sort(real(kr), 'descend');
    kr       = kr(ind);
-
    eigvectorw = eigvectorw(:, ind);
    eigvectorb = eigvectorb(:, ind);
 

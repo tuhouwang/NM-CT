@@ -58,7 +58,7 @@ tic;
     rhow, rhob, cw, cb, ch, alphaw, alphab, alphah, interface, Hb);
 
 [kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, interface, ...
-    Hb, kw, kb, kh, rhow, rhob, rhoh, alphah, Lowerboundary);
+    Hb, kw, kb, kh, rhow, rhob, rhoh, Lowerboundary);
 
 [nmodes, kr, eigvectorw, eigvectorb] = NumOfModes(w, kr, ...
     eigvectorw, eigvectorb, cpmax);

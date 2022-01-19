@@ -103,12 +103,16 @@ The "`input.txt`" file include:
   points in each. It is necessary that `depw(nw)=depb(1)` where the
   density usually has a discontinuity. The first entry `depw(1)=0` is the
   free surface. The last entry `depb(nb)=H` determines the total thickness
-  of the waveguide. 
+  of the waveguide.  The last line is the parameters for the semi-infinite space. 
+
+  Note that when using the half-space boundary condition, the attenuation 
+
+  coefficient needs to be set to a positive value for the program to run stably.
 
   <img src="img/env.png" style="zoom:25%;" />
-
+  
   Figure 1. Layered marine environment.
-
+  
   The plots resulting from the above dialog are as
   follows:
 
