@@ -44,17 +44,17 @@ function [kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, ...
        W(end, end)      = 0.0; 
        
        [eigvector, kz] = polyeig(U, V, W);
-       
-       ind = find(isnan(real(kz))==0 & isnan(imag(kz))==0 & ...
-                  isinf(real(kz))==0 & isinf(imag(kz))==0 & ...
-                  real(kz) >= 0);
+       ind = find(real(kz) >=0 & real(kz) <= real(kh));
        kz  = kz(ind); 
-       eigvector  = eigvector(:,ind); 
-       
-       kr  = sqrt(kh ^ 2 - kz .^ 2);           
+       eigvector  = eigvector(:,ind);
+
+       kr = sqrt(kh ^ 2 - kz.^ 2);
        ind = find(real(kr) < max([real(kw);real(kb);real(kh)]));
-       kr  = kr(ind);   
-       
+       kr  = kr(ind); 
+       eigvector  = eigvector(:,ind);       
+
+       [~, ind] = sort(real(kr), 'descend');
+       kr  = kr(ind);         
        eigvector  = eigvector(:,ind);     
        eigvectorw = eigvector(1:Nw+1, :);
        eigvectorb = eigvector(Nw+2:end, :);
