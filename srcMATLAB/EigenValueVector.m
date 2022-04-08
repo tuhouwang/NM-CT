@@ -44,7 +44,7 @@ function [kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, ...
        W(end, end)      = 0.0; 
        
        [eigvector, kz] = polyeig(U, V, W);
-       ind = find(real(kz) >=0 & real(kz) <= real(kh));
+       ind = find(real(kz) >= 0);
        kz  = kz(ind); 
        eigvector  = eigvector(:,ind);
 

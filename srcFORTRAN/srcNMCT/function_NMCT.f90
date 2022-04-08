@@ -450,13 +450,14 @@ contains
     end subroutine
 
     subroutine EigenValueVector(Nw,Nb,hinterface,Hb,kw,kb,kh,rhow,rhob,rhoh,&
-		                        Lowerboundary,kr,eigvectorw,eigvectorb)
+        alphah,Lowerboundary,kr,eigvectorw,eigvectorb)
         implicit none
         integer,                     intent(in)     :: Nw, Nb
         character(len=1),            intent(in)     :: Lowerboundary
         real(rkind),                 intent(in)     :: hinterface, Hb
         real(rkind),                 intent(in)     :: rhow(Nw+1), rhob(Nb+1)
-        real(rkind),                 intent(in)     :: rhoh    
+        real(rkind),                 intent(in)     :: rhoh
+        real(rkind),                 intent(in)     :: alphah     
         complex(rkind),              intent(inout)  :: kw(Nw+1), kb(Nb+1)
         complex(rkind),              intent(in)     :: kh        
         complex(rkind),allocatable,  intent(out)    :: kr(:)
@@ -489,12 +490,10 @@ contains
         complex(rkind), allocatable, dimension(:)   :: BETA                                                            
         integer                                     :: j(1), INFO 
         integer                                     :: i
-        real(rkind)                                 :: km
 
         D1 = DerivationMatrix(Nw+1)
         D2 = DerivationMatrix(Nb+1)
-		
-        km = maxval(real(kw))
+
         do i = 1, Nw + 1
             x1(i) = cos((i - 1) * pi / Nw)
             kw(i) = kw(i) ** 2            
@@ -576,7 +575,7 @@ contains
             ALPHA = ALPHA / BETA         
             
             do i = 1, 2*(Nw+Nb+2)
-                if(real(ALPHA(i)) >= 0 .and. real(sqrt(kh ** 2 - ALPHA(i) ** 2)) < km ) then
+                if(real(ALPHA(i)) >= 0.0_rkind) then
                     ALPHA(  INFO+1) = sqrt(kh ** 2 - ALPHA(i) ** 2)
                     !GEVL temporarily stores the right eigenvectors 
                     GEVL(:, INFO+1) = VR(:, i)
@@ -690,7 +689,7 @@ contains
         do i = 1, size(kr)
             if (cp(i) <= cpmax) nmodes = i
         end do
-		
+
         call assert( nmodes /= 0, 'Incorrect maximum phase speed input!')
 
         deallocate(cp)
