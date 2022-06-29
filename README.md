@@ -114,7 +114,7 @@ The "`input.txt`" file include:
   
   Figure 1. Layered marine environment.
   
-  The plots resulting from the above dialog are as
+  The plots resulting of example 2 are as
   follows:
 
 <img src="img/d1.png" style="zoom:25%;" />
