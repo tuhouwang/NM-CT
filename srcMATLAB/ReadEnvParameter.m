@@ -1,45 +1,51 @@
-function [casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, interface, ...
-    Hb, dz, Lowerboundary, tlmin, tlmax, depw, cw, rhow, alphaw, ...
-    depb, cb, rhob, alphab, ch, rhoh, alphah] = ReadEnvParameter(env_file)
+function [casename,Layers, Ns, cpmax, freq, zs, zr, rmax, dr, interface, dz, tlmin, tlmax, ...
+          dep, c, rho, alpha, ch, rhoh, alphah, Lowerboundary] = ReadEnvParameter(env_file)
 
     fid           = fopen(env_file);
     casename      = fgetl(fid);
-    Nw            = fscanf(fid, '%d', 1);
-    Nb            = fscanf(fid, '%d', 1);
+    Layers        = fscanf(fid, '%d', 1);
+    Ns            = fscanf(fid, '%d', Layers);
     cpmax         = fscanf(fid, '%f', 1);
     freq          = fscanf(fid, '%f', 1);
     zs            = fscanf(fid, '%f', 1);
     zr            = fscanf(fid, '%f', 1);
     rmax          = fscanf(fid, '%f', 1);
     dr            = fscanf(fid, '%f', 1);
-    interface     = fscanf(fid, '%f', 1);
-    Hb            = fscanf(fid, '%f', 1);
+    interface     = fscanf(fid, '%f', Layers);
     dz            = fscanf(fid, '%f', 1);
     tlmin         = fscanf(fid, '%f', 1);
     tlmax         = fscanf(fid, '%f', 1);
-    nw            = fscanf(fid, '%d', 1);
-    nb            = fscanf(fid, '%d', 1);
+    nprofile      = fscanf(fid, '%d', Layers);
     
-    if (interface > 0.0 && interface < Hb && Nw > 2 && Nb > 2)
-        WProfile  = fscanf(fid, '%f %f', [4, nw]);
-        depw      = WProfile(1, 1:nw);
-        cw        = WProfile(2, 1:nw);
-        rhow      = WProfile(3, 1:nw);
-        alphaw    = WProfile(4, 1:nw);
-        BProfile  = fscanf(fid, '%f %f', [4, nb]);
-        depb      = BProfile(1, 1:nb);
-        cb        = BProfile(2, 1:nb);
-        rhob      = BProfile(3, 1:nb);
-        alphab    = BProfile(4, 1:nb);
-    else
-        error('Error! h must greater than 0 and less than H!');
+    dep   = cell(Layers,1);
+    c     = cell(Layers,1);   
+    rho   = cell(Layers,1);
+    alpha = cell(Layers,1);
+    
+    for i = 1 : Layers
+        if (i < Layers && interface(i) > 0.0 && ...
+            interface(i) < interface(i+1) && nprofile(i) >= 2)
+            Profile     = fscanf(fid, '%f %f', [4, nprofile(i)]);
+            dep(i)      = {Profile(1, 1:nprofile(i))};
+            c(i)        = {Profile(2, 1:nprofile(i))};
+            rho(i)      = {Profile(3, 1:nprofile(i))};
+            alpha(i)    = {Profile(4, 1:nprofile(i))};
+        elseif(interface(i) > 0.0 && nprofile(i) >= 2)
+            Profile     = fscanf(fid, '%f %f', [4, nprofile(i)]);
+            dep(i)      = {Profile(1, 1:nprofile(i))};
+            c(i)        = {Profile(2, 1:nprofile(i))};
+            rho(i)      = {Profile(3, 1:nprofile(i))};
+            alpha(i)    = {Profile(4, 1:nprofile(i))};
+        else
+            error('Error! h must greater than 0 and less than H!');
+        end
     end
     
     Lowerboundary = fscanf(fid, '%s', 1);
     
     if (Lowerboundary ~= 'V' && Lowerboundary ~= 'R' && Lowerboundary ~= 'A')
         disp('Error! The lower boundary must be vaccum, rigid or halfspace!');
-        error('Please input 0 or 1 in Lowerboundary!');
+        error('Please set V, R or A in Lowerboundary!');
     end
     
     if (Lowerboundary == 'A')
@@ -54,20 +60,24 @@ function [casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, interface, ...
     end
     
     % Check the input underwater sound profile    
-    if (Nw < 2 || Nb < 2)
-        error('Nw and Nb must greater than 2!');
+    for i = 1 : Layers
+        if (dep{i}(end) ~= interface(i))
+            error('Error! input sound profile is unsuitable!');
+        end
+        if (Ns(i) < 2)
+            error('N must greater than 2!');
+        end
     end
     
-    if (depw(1) ~= 0.0 || depw(nw) ~= interface ||...
-            depb(1) ~= interface || depb(nb) ~= Hb)
-        error('Error! input sound profile is unsuitable!');
-    end
+    if ( interface(end) / dz - floor( interface(end) / dz ) ~= 0 )
+        error('Error! The input dz unsuitable!');
+    end  
 
     if ((rmax / dr - floor(rmax / dr)) ~= 0)
-        error('Please reinput the dr and rmax !');
+        error('Please reinput the dr and rmax!');
     end
 
-    if (zs <= 0  || zs >= Hb || zr <= 0 || zr >= Hb)
+    if (zs <= 0  || zs >= interface(end) || zr <= 0 || zr >= interface(end))
         error('zs and zr must be greater than 0 and less than H!');
     end
     

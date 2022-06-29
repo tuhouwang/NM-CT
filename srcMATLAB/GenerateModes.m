@@ -1,33 +1,34 @@
-function [psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
-                  zs, rhow, rhob, rhoh, kr, kh, Lowerboundary, interface, Hb)
+function [psi, psizs, z] = GenerateModes(eigvector, nmodes, dz, zs, ...
+                   rho, rhoh, kr, kh, Lowerboundary, dep, Layers)
 
-    zt1  = 0 : dz : interface;
-    zt2  = interface : dz : Hb;
-    z    = 0 : dz : Hb;
-
-    xt1  = -2 / interface * zt1 + 1;
-    xt2  = -2 / (Hb - interface) * zt2 + ...
-           (Hb + interface) / (Hb - interface);
-
-    psi1 = InvChebTrans(eigvectorw, xt1);
-    psi2 = InvChebTrans(eigvectorb, xt2);
+    z   = 0 : dz : dep{end}(end);    
+    zm  = [];
+    psi = [];
     
-    if(zt1(end) == zt2(1))
-        psi  = [psi1(1 : length(xt1) - 1, :); psi2];
-    else
-        zt   = [zt1; zt2];
-        psi  = [psi1; psi2];
-        psi  = interp1(zt,psi,z,'linear','extrap');
+    for i = 1 : Layers
+        zi = dep{i}(1) : dz : dep{i}(end);
+        xi = -2 / (dep{i}(end) - dep{i}(1)) * zi + ...
+                  (dep{i}(end) + dep{i}(1)) / (dep{i}(end) - dep{i}(1));
+        if(isempty(zm) == 1)
+           zm = zi;
+           psi= InvChebTrans(eigvector{i}, xi);
+        elseif(zm(end) == zi(1))   
+           zm  = [zm, zi(2:end)];
+           p   = InvChebTrans(eigvector{i}, xi);
+           psi = [psi; p(2:end,:)];             
+        else
+           zm  = [zm, zi];
+           psi = [psi; InvChebTrans(eigvector{i}, xi)];          
+        end  
     end
 
-    norm = Normalization(eigvectorw, eigvectorb, ...
-                 nmodes, rhow, rhob, interface, Hb);
+    norm = Normalization(eigvector, nmodes, rho, dep, Layers);
     
     if(Lowerboundary == 'A')
         norm = norm + 0.5 ./ rhoh * psi(end, :) .^ 2  ./ sqrt(kr .^ 2 - kh ^ 2).';
     end         
 
-    psi   = psi * diag( sqrt(1 ./ norm) );
-    psizs = interp1(z, psi, zs, 'linear');
+    psi   = psi * diag(sqrt(1 ./ norm));
+    psizs = interp1(z, psi, zs, 'linear', 'extrap');
     
 end

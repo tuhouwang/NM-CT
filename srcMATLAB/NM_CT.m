@@ -28,43 +28,51 @@
 % -------------------------------------------------------------------------
 % 11/08/2021                                                              |
 %                                                                         |
-% Roberto Sabatini et al proposed a new technology that can accurately    |
+% Roberto Sabatini et al proposed a new technique that can accurately     |
 % solve acoustic semi-infinite space conditions based on the Chebyshev    |
 % Collocation method in their paper "A multi-domain collocation method for| 
 % the accurate computation of normal modes in open oceanic and atmospheric| 
 % waveguides", Acta Acustica United with Acustica,105, 464¨C474 (2019)    |
 % doi:10.3813/AAA.919328.                                                 |
 %                                                                         |
-% After carefully studying the technology, I integrated it into the NM-CT |
+% After carefully studying the technique, I integrated it into the NM-CT  |
 % program and achieved good results. The latest NM-CT can accurately      |
-% handle the perfectly free, perfectly rigid and semi-infinite space      |
+% handle the perfectly free, perfectly rigid and infinite half-space      |
 % conditions of the lower boundary! Simply specify the type of lower      |
 % boundary condition in the input file.                                   |
 %--------------------------------------------------------------------------
+% 06/26/2022                                                              |
+%                                                                         |
+% New version of the program can calculate underwater acoustic propagation|
+% in arbitrary horizontally stratified media. This improvement absorbs the|
+% idea of domain-decomposition in the author's article (H.Tu, Y. Wang,    |
+% Q. Lan et al., Applying a Legendre collocation method based on domain   |
+% decomposition to calculate underwater sound propagation in a            |
+% horizontally stratified environment, Journal of Sound and Vibration,    |
+% https://doi.org/10.1016/j.jsv.2021.116364), and extends the range of    |
+% solvable problems to the media with any number of layers.               |
+%--------------------------------------------------------------------------
+
 % edit 'input.txt';
 clear;
 % close all;
 clc;
 tic;
 
-[casename, Nw, Nb, cpmax, freq, zs, zr, rmax, dr, interface, ...
-    Hb, dz, Lowerboundary, tlmin, tlmax, depw, cw, rhow, alphaw, ...
-    depb, cb, rhob, alphab, ch, rhoh, alphah] = ReadEnvParameter('input.txt');
+[casename,Layers, Ns, cpmax, freq, zs, zr, rmax, dr, interface, dz, tlmin, tlmax, ...
+ dep, c, rho, alpha, ch, rhoh, alphah, Lowerboundary] = ReadEnvParameter('input.txt');
 
-[cw, rhow, alphaw] = Interpolation(depw, cw, rhow, alphaw, Nw,  0, interface);
-[cb, rhob, alphab] = Interpolation(depb, cb, rhob, alphab, Nb, interface, Hb);
-%----------------------------------------------
-[nr, r, rhozs, kw, kb, kh, w] = Initialization(Nw, Nb, freq, rmax, dr, zs, ...
-    rhow, rhob, cw, cb, ch, alphaw, alphab, alphah, interface, Hb);
+[c, rho, alpha] = ChebInterpolation(dep, c, rho, alpha, Layers, Ns);
 
-[kr, eigvectorw, eigvectorb] = EigenValueVector(Nw, Nb, interface, ...
-    Hb, kw, kb, kh, rhow, rhob, rhoh, Lowerboundary);
+[nr, r, rhozs, k, kh] = Initialization(Layers, Ns, freq, rmax, ...
+       dr, zs, dep, c, rho, alpha, interface, ch, alphah);
 
-[nmodes, kr, eigvectorw, eigvectorb] = NumOfModes(w, kr, ...
-    eigvectorw, eigvectorb, cpmax);
+[kr, eigvector] = EigenValueVector(Ns, Layers, dep, k, rho, kh, rhoh, Lowerboundary);
 
-[psi, psizs, z] = GenerateModes(eigvectorw, eigvectorb, nmodes, dz, ...
-         zs, rhow, rhob, rhoh, kr, kh, Lowerboundary, interface, Hb);
+[nmodes, kr, eigvector] = NumOfModes(Layers, freq, kr, eigvector, cpmax);
+
+[psi, psizs, z] = GenerateModes(eigvector, nmodes, dz, ...
+         zs, rho, rhoh, kr, kh, Lowerboundary, dep, Layers);
 
 [tl, tl_zr] = SynthesizeSoundField(r, z, kr, rhozs, psizs, psi, zr);
 
