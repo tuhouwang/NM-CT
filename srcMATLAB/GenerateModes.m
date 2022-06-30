@@ -21,7 +21,8 @@ function [psi, psizs, z] = GenerateModes(eigvector, nmodes, dz, zs, ...
            psi = [psi; InvChebTrans(eigvector{i}, xi)];          
         end  
     end
-
+    
+    psi  = interp1(zm, psi, z, 'linear', 'extrap');
     norm = Normalization(eigvector, nmodes, rho, dep, Layers);
     
     if(Lowerboundary == 'A')
