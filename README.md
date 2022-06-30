@@ -90,8 +90,7 @@ The "`input.txt`" file include:
 
 * `dz` (discrete step size in depth direction, m),
 
-* `tlmin` and `tlmax`
-  and `tlmax` are the minmum and maximum value transmission loss,
+* `tlmin` and `tlmax` are the minmum and maximum value transmission loss,
   respectively, which used to determine the color range of the output
   transmission loss graph, `tlmin` must less than `tlmax`.
 
