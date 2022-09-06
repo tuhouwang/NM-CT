@@ -96,6 +96,8 @@ program NMCT
     complex(rkind),allocatable, dimension(:, :)  :: psi
     real(rkind),   allocatable, dimension(:, :)  :: tl
     real(rkind),   allocatable, dimension(:)     :: z
+    
+    call Msg
 
     call ReadEnvParameter(casename,Layers,Ns,cpmax,freq,zs,zr,rmax,dr,hinterface,dz,&
             tlmin,tlmax,dep,c,rho,alpha,ch,rhoh,alphah,Lowerboundary,data_file)
@@ -116,7 +118,5 @@ program NMCT
     call SaveSoundField(filename,casename,tlmin,tlmax,r,z,tl)
     
     deallocate(Ns,hinterface,r,kr,eigvector,psi,z,tl)
-
-    call Msg
 
 end program

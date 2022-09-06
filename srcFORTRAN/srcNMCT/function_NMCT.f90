@@ -862,7 +862,7 @@ contains
         integer(rkind),                  intent(in)   :: nmodes
         complex(rkind), dimension(:, :), intent(inout):: psi
         complex(rkind), dimension(:, :), intent(in)   :: eigvector
-        real(rkind),    dimension(:, :), intent(out)  :: rho
+        real(rkind),    dimension(:, :), intent(in)   :: rho
         real(rkind),                     intent(in)   :: rhoh        
         complex(rkind),                  intent(in)   :: kr(nmodes)
         complex(rkind),                  intent(in)   :: kh        
@@ -902,7 +902,7 @@ contains
 
         if(Lowerboundary == 'A') then
             do j = 1, nmodes
-                norm(j) = norm(j) + 0.5_rkind / rhoh * psi(size(psi, 1), j) ** 2 / sqrt(kh ** 2 - kr(j) ** 2)            
+                norm(j) = norm(j) + 0.5_rkind / rhoh * psi(size(psi, 1), j) ** 2 / sqrt(kr(j) ** 2 - kh ** 2)            
             end do
         end if
         
