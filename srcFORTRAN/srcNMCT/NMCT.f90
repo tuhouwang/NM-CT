@@ -68,8 +68,8 @@ program NMCT
     character(len=MAX_FILENAME_LEN)              :: data_file = "input.txt"
     character(len=MAX_FILENAME_LEN)              :: filename  = "tl.bin"
     character(len=1)                             :: Lowerboundary  
-    integer(rkind)                               :: nr
-    integer(rkind)                               :: nmodes
+    integer                                      :: nr
+    integer                                      :: nmodes
     real(rkind)                                  :: cpmax
     real(rkind)                                  :: dr
     real(rkind)                                  :: zs
@@ -82,8 +82,8 @@ program NMCT
     real(rkind)                                  :: rhozs    
     real(rkind)                                  :: ch, rhoh, alphah
     complex(rkind)                               :: kh    
-    integer(rkind)                               :: Layers    
-    integer(rkind),allocatable, dimension(:)     :: Ns    
+    integer                                      :: Layers    
+    integer       ,allocatable, dimension(:)     :: Ns    
     real(rkind),   allocatable, dimension(:)     :: hinterface
     real(rkind),   allocatable, dimension(:)     :: r   
     real(rkind),                dimension(LL,CC) :: dep

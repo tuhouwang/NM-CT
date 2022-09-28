@@ -35,7 +35,7 @@ contains
         real(rkind)                 :: ChebReal(size(z))
         real(rkind)                 :: fx2(size(z))
         real(rkind)                 :: T(size(z),size(z)) 
-        integer(rkind)              :: m, i
+        integer                     :: m, i
         
         m = size(fx)           
         T = 0.0_rkind
@@ -63,7 +63,7 @@ contains
         complex(rkind)              :: ChebComplex(size(z))
         complex(rkind)              :: fx2(size(z))
         real(rkind)                 :: T(size(z),size(z)) 
-        integer(rkind)              :: m, i
+        integer                     :: m, i
         
         m = size(fx)           
         T = 0.0_rkind
@@ -90,7 +90,7 @@ contains
         complex(rkind), intent(in)  :: fk(:, :)
         complex(rkind)              :: InvChebMatrix(size(z),size(fk,2))
         real(rkind)                 :: T(size(z), size(fk,1))
-        integer(rkind)              :: i
+        integer                     :: i
 
         T  = 0.0_rkind
 
@@ -105,9 +105,9 @@ contains
     function DerivationMatrix(m)
     
         implicit none
-        integer(rkind), intent(in) :: m
+        integer,        intent(in) :: m
         real(rkind)                :: DerivationMatrix(m, m)
-        integer(rkind)             :: i, j
+        integer                    :: i, j
     
         DerivationMatrix = 0.0_rkind
         do i = 1, m
@@ -126,7 +126,7 @@ contains
         implicit none
         real(rkind), intent(in)   :: v(:)
         real(rkind)               :: ConvolutionReal(size(v),size(v))
-        integer(rkind)            :: i, j, k, n
+        integer                   :: i, j, k, n
     
         ConvolutionReal = 0.0_rkind
     
@@ -158,7 +158,7 @@ contains
         implicit none
         complex(rkind), intent(in)   :: v(:)
         complex(rkind)               :: ConvolutionComplex(size(v),size(v))
-        integer(rkind)               :: i, j, k, n
+        integer                      :: i, j, k, n
     
         ConvolutionComplex = 0.0_rkind
     
@@ -225,7 +225,7 @@ contains
         real   (rkind),intent(in) :: z(:), zs
         real   (rkind),intent(in) :: v(:)
         real   (rkind)            :: Interpolation_zs_R
-        integer(rkind)            :: j
+        integer                   :: j
         Interpolation_zs_R = 0.0_rkind
         
         call assert(zs <= z(size(z)) .and. zs >= z(1), 'Error! zs is not in the range of z, interpolation failed!')
@@ -245,7 +245,7 @@ contains
         real   (rkind),intent(in) :: z(:), zs
         complex(rkind),intent(in) :: v(:)
         complex(rkind)            :: Interpolation_zs_C
-        integer(rkind)            :: j
+        integer                   :: j
         Interpolation_zs_C = 0.0_rkind
         
         call assert(zs <= z(size(z)) .and. zs >= z(1), 'Error! zs is not in the range of z, interpolation failed!')
@@ -267,8 +267,8 @@ contains
         character(len=MAX_FILENAME_LEN), intent(out) :: casename
         character(len=MAX_FILENAME_LEN), intent(in)  :: data_file
         character(len=1),                intent(out) :: Lowerboundary
-        integer(rkind),                  intent(out) :: Layers
-        integer(rkind),allocatable,      intent(out) :: Ns(:)
+        integer ,                        intent(out) :: Layers
+        integer ,      allocatable,      intent(out) :: Ns(:)
         real(rkind),                     intent(out) :: cpmax
         real(rkind),                     intent(out) :: freq        
         real(rkind),                     intent(out) :: zs
@@ -286,8 +286,8 @@ contains
         real(rkind),                     intent(out) :: ch        
         real(rkind),                     intent(out) :: rhoh 
         real(rkind),                     intent(out) :: alphah  
-        integer(rkind),allocatable			         :: nprofile(:)
-        integer(rkind)                               :: i, j
+        integer,      allocatable			         :: nprofile(:)
+        integer                                      :: i, j
         dep   = 0.0_rkind
         c     = 9999.0_rkind
         rho   = 0.0_rkind
@@ -373,8 +373,8 @@ contains
 
     subroutine ChebInterpolation(m,dep,c,rho,alpha,N)
         implicit none
-        integer(rkind),intent(in)    :: N
-        integer(rkind),intent(in)    :: m
+        integer,       intent(in)    :: N
+        integer,       intent(in)    :: m
         real(rkind),   intent(inout) :: dep(N+1)
         real(rkind),   intent(inout) :: c(N+1)
         real(rkind),   intent(inout) :: rho(N+1)
@@ -384,7 +384,7 @@ contains
         real(rkind)                  :: b2(N+1)
         real(rkind)                  :: c2(N+1)
         real(rkind)                  :: d2(N+1)
-        integer(rkind)               :: i,j
+        integer                      :: i,j
         
         do i = 1, N+1
             x(i) = cos((i - 1) * pi / N)
@@ -462,13 +462,13 @@ contains
     subroutine Initialization(Layers,Ns,freq,rmax,dr,zs,nr,r,rhozs,hinterface,ki,&
                                                     dep,c,rho,alpha,ch,alphah,kh)
         implicit none
-        integer(rkind),                 intent(in)  :: Layers
-        integer(rkind),                 intent(in)  :: Ns(Layers)
+        integer,                        intent(in)  :: Layers
+        integer,                        intent(in)  :: Ns(Layers)
         real(rkind),                    intent(in)  :: freq
         real(rkind),                    intent(in)  :: rmax
         real(rkind),                    intent(in)  :: dr
         real(rkind),                    intent(in)  :: zs        
-        integer(rkind),                 intent(out) :: nr
+        integer,                        intent(out) :: nr
         real(rkind),    allocatable,    intent(out) :: r(:)
         real(rkind),                    intent(out) :: rhozs
         real(rkind),                    intent(in)  :: hinterface(Layers)
@@ -505,8 +505,8 @@ contains
 
     subroutine EigenValueVector(Layers,Ns,dep,ki,rho,kh,rhoh,Lowerboundary,kr,eigvector)
         implicit none
-        integer(rkind),                 intent(in)   :: Layers
-        integer(rkind),                 intent(in)   :: Ns(Layers)
+        integer,                        intent(in)   :: Layers
+        integer,                        intent(in)   :: Ns(Layers)
         real(rkind),   dimension(LL,CC),intent(in)   :: dep
         real(rkind),   dimension(LL,CC),intent(in)   :: rho        
         complex(rkind),dimension(LL,CC),intent(in)   :: ki
@@ -772,14 +772,14 @@ contains
 
     subroutine NumOfModes(Layers,freq,cpmax,kr,eigvector,nmodes)
         implicit none
-        integer(rkind),intent(in)   :: Layers
-        integer(rkind),intent(out)  :: nmodes	
+        integer,       intent(in)   :: Layers
+        integer,       intent(out)  :: nmodes	
         real(rkind),   intent(in)   :: freq
         real(rkind),   intent(in)   :: cpmax
         complex(rkind),intent(inout):: kr(:)
         complex(rkind),intent(inout):: eigvector(:, :)
         real(rkind),   allocatable  :: cp(:)
-        integer(rkind)              :: i
+        integer                     :: i
         
         allocate(cp(size(kr)))
         cp = 2 * pi * freq / real(kr)
@@ -801,9 +801,9 @@ contains
     subroutine GenerateModes(Layers,Ns,nmodes,eigvector,dz,z,dep,psi)
 
         implicit none
-        integer(rkind),                  intent(in)  :: Layers 
-        integer(rkind),                  intent(in)  :: Ns(Layers)        
-        integer(rkind),                  intent(in)  :: nmodes
+        integer,                         intent(in)  :: Layers 
+        integer,                         intent(in)  :: Ns(Layers)        
+        integer,                         intent(in)  :: nmodes
         real(rkind),    dimension(LL,CC),intent(in)  :: dep        
         complex(rkind), dimension(:, :), intent(in)  :: eigvector          
         real(rkind),                     intent(in)  :: dz
@@ -857,9 +857,9 @@ contains
     subroutine Normalization(Layers,Ns,nmodes,psi,eigvector,rho,rhoh,kr,kh,Lowerboundary,dep)
 
         implicit none
-        integer(rkind),                  intent(in)   :: Layers 
-        integer(rkind), dimension(:),    intent(in)   :: Ns
-        integer(rkind),                  intent(in)   :: nmodes
+        integer,                         intent(in)   :: Layers 
+        integer,        dimension(:),    intent(in)   :: Ns
+        integer,                         intent(in)   :: nmodes
         complex(rkind), dimension(:, :), intent(inout):: psi
         complex(rkind), dimension(:, :), intent(in)   :: eigvector
         real(rkind),    dimension(:, :), intent(in)   :: rho
@@ -915,8 +915,8 @@ contains
     subroutine SynthesizeSoundField(nmodes,nr,r,kr,rhozs,zs,dz,psi,tl)
 
         implicit none
-        integer(rkind),           intent(in)    :: nmodes
-        integer(rkind),           intent(in)    :: nr
+        integer,                  intent(in)    :: nmodes
+        integer,                  intent(in)    :: nr
         real(rkind),              intent(in)    :: r(nr)
         real(rkind),              intent(in)    :: rhozs
         real(rkind),              intent(in)    :: zs
@@ -975,7 +975,7 @@ contains
         write(*,*)'****************************************************************'
         write(*,*)' NM-CT is a program of range-independent acoustic propagation.'
         write(*,*)
-        write(*,*)' Contact: Ph.D student Houwang Tu'
+        write(*,*)' Contact: Houwang Tu, Ph.D Candidate'
         write(*,*)'          National University of Defense Technology'
         write(*,*)'          Changsha, 410073, Hunan province, China'
         write(*,*)
