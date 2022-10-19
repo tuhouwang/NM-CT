@@ -48,19 +48,14 @@ function [kr, eigvector] = EigenValueVector(Ns, Layers, dep, k, rho, kh, ...
         W(end, end)             = 0;
 
         [v, kz] = polyeig(U, V, W);
-        ind = find(real(kz) >= 0);
-        kz  = kz(  ind);
-        v   = v (:,ind);
-
         kr  = sqrt(kh ^ 2 - kz .^ 2);
-        ind = find(real(kr) < max(real([cell2mat(k); kh])));
+        ind = find(real(kz) >= 0 & abs(kr) < max(abs(k{1})));
         kr  = kr(  ind);
         v   = v (:,ind);
-
         [~, ind] = sort(real(kr), 'descend');
         kr  = kr(  ind);
         v   = v (:,ind);
-        
+
         eigvector = cell(Layers, 1);
         n = 1;
         for i = 1 : Layers

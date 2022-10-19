@@ -636,8 +636,9 @@ contains
             ALPHA = ALPHA / BETA         
             
             do i = 1, 2*sum(Ns+1)
-                if(real(ALPHA(i)) >= 0.0_rkind .and. real(sqrt(kh**2-ALPHA(i)**2)) <= maxval(real(ki))) then
-                    ALPHA(  INFO+1) = sqrt(kh ** 2 - ALPHA(i) ** 2)
+                BETA(i) = sqrt(kh ** 2 - ALPHA(i) ** 2)
+                if(real(ALPHA(i)) >= 0.0_rkind .and. abs(BETA(i)) < maxval(abs(ki))) then
+                    ALPHA(  INFO+1) = BETA(i)
                     !GEVL temporarily stores the right eigenvectors 
                     GEVL(:, INFO+1) = VR(:, i)
                     INFO =  INFO+1
@@ -655,7 +656,6 @@ contains
                     VR(:, i)    = GEVL(:, j(1))
                     ALPHA(j(1)) = -9999.0_rkind
                 end do
-
                 eigvector = VR(sum(Ns+1)+1:2*sum(Ns+1), 1:INFO) 
             else
                 stop 'Error! No suitable modes!'

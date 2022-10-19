@@ -2,7 +2,7 @@ Example9, change from Example 5
 2
 50 
 50                           
-3500.0 
+35000.0 
 50.0                                                           
 36.0                          
 20.0                          
