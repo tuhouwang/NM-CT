@@ -49,7 +49,7 @@ function [kr, eigvector] = EigenValueVector(Ns, Layers, dep, k, rho, kh, ...
 
         [v, kz] = polyeig(U, V, W);
         kr  = sqrt(kh ^ 2 - kz .^ 2);
-        ind = find(real(kz) >= 0 & abs(kr) < max(abs(k{1})));
+        ind = find(real(kz) >= 0 & abs(kr) < max(abs(cell2mat(k))) );
         kr  = kr(  ind);
         v   = v (:,ind);
         [~, ind] = sort(real(kr), 'descend');
